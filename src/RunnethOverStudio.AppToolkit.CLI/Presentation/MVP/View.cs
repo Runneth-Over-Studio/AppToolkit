@@ -14,10 +14,10 @@ public abstract class View
     /// Represents the stylized ASCII art text for the application title.
     /// </summary>
     /// <remarks>
-    /// Optionally set this field once at application startup (e.g., <c>SpectreView.AppTitleFiglet = new FigletText("My App");</c>)
+    /// Optionally set this field once at application startup (e.g., <c>View.AppTitleFiglet = new FigletText("My App");</c>)
     /// so that all derived views will display this title when clearing the console.
     /// </remarks>
-    public static readonly FigletText? AppTitleFiglet;
+    public static FigletText? AppTitleFiglet { get; set; }
 
     /// <summary>
     /// The format string used for displaying prompts in a CLI application.
