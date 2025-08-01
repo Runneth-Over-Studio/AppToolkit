@@ -3,7 +3,7 @@
 namespace Build;
 
 /// <summary>
-/// Build orchestrator for the Gopher Wood Engine solution.
+/// Build orchestrator for the App Toolkit solution.
 /// Uses <see href="https://cakebuild.net/">Cake</see> (C# Make) 
 /// which is open source, cross platform, cross environment, cross service, and cross runtime.
 /// </summary>
