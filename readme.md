@@ -6,7 +6,7 @@
 Runneth Over Studio common C# app development code.
 
 ## Versioning
-Gopher Wood Engine uses [Semantic Versioning](https://semver.org/).
+App Toolkit uses [Semantic Versioning](https://semver.org/).
 
 - **MAJOR** version: Incompatible API changes
 - **MINOR** version: Backward-compatible functionality
