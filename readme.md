@@ -16,12 +16,16 @@ Gopher Wood Engine uses [Semantic Versioning](https://semver.org/).
 - All projects target the LTS version of the [.NET SDK](https://dotnet.microsoft.com/en-us/download).
 - The Build project uses [Cake](https://cakebuild.net/) (C# Make) as the build orchestrator and can be launched from your IDE or via script.
 
-		- On OSX/Linux run:
-		```bash
-		build.sh
-		```
+	- On OSX/Linux run:
+	```bash
+	./build.sh
+	```
+	- If you get a "Permission denied" error, you may need to make the script executable first:
+	```bash
+	chmod +x build.sh
+	```
 
-		- On Windows PowerShell run:
-		```powershell
-		./build.ps1
-		```
+	- On Windows PowerShell run:
+	```powershell
+	./build.ps1
+	```
