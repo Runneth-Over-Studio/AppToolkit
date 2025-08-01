@@ -64,14 +64,6 @@ public class EnumToDisplayNameConverter : IValueConverter
         throw new NotSupportedException();
     }
 
-    /// <summary>
-    /// Retrieves a custom attribute of type <typeparamref name="TAttribute"/> from the specified enum value.
-    /// </summary>
-    /// <typeparam name="TAttribute">The type of attribute to retrieve.</typeparam>
-    /// <param name="enumValue">The enum value from which to retrieve the attribute.</param>
-    /// <returns>
-    /// The attribute of type <typeparamref name="TAttribute"/> if found; otherwise, <c>null</c>.
-    /// </returns>
     private static TAttribute? GetAttribute<TAttribute>(Enum enumValue) where TAttribute : Attribute
     {
         return enumValue

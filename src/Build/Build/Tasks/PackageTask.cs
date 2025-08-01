@@ -20,9 +20,9 @@ public sealed class PackageTask : FrostingTask<BuildContext>
 
     public override void Run(BuildContext context)
     {
-        PackageProject(context, context.CLIProjectName, context.CLIProjectOutputDirectory, context.CLIProjectOutputDirectory);
+        PackageProject(context, context.CLIProjectName, context.CLIProjectDirectory, context.CLIProjectOutputDirectory);
 
-        PackageProject(context, context.DesktopProjectName, context.DesktopProjectOutputDirectory, context.DesktopProjectOutputDirectory);
+        PackageProject(context, context.DesktopProjectName, context.DesktopProjectDirectory, context.DesktopProjectOutputDirectory);
     }
 
     private static void PackageProject(BuildContext context, string projectName, ConvertableDirectoryPath projectDirectory, ConvertableDirectoryPath outputDirectory)
