@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>net8.0</TargetFramework>
+	<ImplicitUsings>disable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<PublishSingleFile>true</PublishSingleFile>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<Optimize>true</Optimize>
+	<Product>App Toolkit - Desktop</Product>
+	<Authors>Runneth Over Studio, LLC</Authors>
+	<Company>Runneth Over Studio, LLC</Company>
+	<Copyright>© Runneth Over Studio, LLC</Copyright>
+	<PackageId>RunnethOverStudio.AppToolkit.Desktop</PackageId>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageReadmeFile>readme.md</PackageReadmeFile>
+	<PackageIcon>package-icon.png</PackageIcon>
+	<PackageProjectUrl>https://github.com/Runneth-Over-Studio/AppToolkit</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/Runneth-Over-Studio/AppToolkit</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<Description>Common application development code, explicitly extended for desktop (Avalonia) apps.</Description>
+	<PackageTags>app helpers desktop avalonia</PackageTags>
+	<IncludeSymbols>true</IncludeSymbols>
+	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<Version>0.1.0</Version>
+	<PackageReleaseNotes>In-development / pre-alpha.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RunnethOverStudio.AppToolkit\RunnethOverStudio.AppToolkit.csproj" />
+  </ItemGroup>
+
+</Project>
