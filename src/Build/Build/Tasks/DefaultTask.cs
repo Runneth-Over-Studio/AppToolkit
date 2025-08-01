@@ -4,14 +4,14 @@ using Cake.Frosting;
 
 namespace Build.Tasks;
 
-// The top-level default task is the entry point for the build process when a command-line target isn't specified.
-
 [TaskName("Default")]
 [IsDependentOn(typeof(PackageTask))]
+[TaskDescription("Entry point for the build process when a command-line target isn't specified.")]
 public sealed class DefaultTask : FrostingTask
 {
     public override void Run(ICakeContext context)
     {
-        context.Log.Information("Set the task to run with --target [task]");
+        context.Log.Information("Set specific task to run with --target [task]");
+        context.Log.Information("Run entire release build with: dotnet run -- --configuration=Release");
     }
 }

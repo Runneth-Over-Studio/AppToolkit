@@ -9,7 +9,7 @@ using static Build.BuildContext;
 namespace Build.Tasks;
 
 [TaskName("Package")]
-[IsDependentOn(typeof(CompileProjectsTask))]
+[IsDependentOn(typeof(PublishTask))]
 [TaskDescription("Generates the NuGet packages using previously processed images and project properties.")]
 public sealed class PackageTask : FrostingTask<BuildContext>
 {

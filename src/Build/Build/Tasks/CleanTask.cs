@@ -13,14 +13,14 @@ public sealed class CleanTask : FrostingTask<BuildContext>
     public override void Run(BuildContext context)
     {
         // Find all bin/config directories under src.
-        DirectoryPathCollection debugDirs = context.GetDirectories($"{context.SourceDirectory}/**/bin/{context.Config}");
+        DirectoryPathCollection compileDirs = context.GetDirectories($"{context.SourceDirectory}/**/bin/{context.Config}");
 
         // Exclude this Build project's own bin/config directory.
-        DirectoryPath buildProjectDebugDir = context.MakeAbsolute(context.Directory($"./bin/{context.Config}"));
+        DirectoryPath buildProjectCompileDir = context.MakeAbsolute(context.Directory($"./bin/{context.Config}"));
 
-        foreach (DirectoryPath dir in debugDirs)
+        foreach (DirectoryPath dir in compileDirs)
         {
-            if (!dir.FullPath.Equals(buildProjectDebugDir.FullPath, StringComparison.OrdinalIgnoreCase))
+            if (!dir.FullPath.Equals(buildProjectCompileDir.FullPath, StringComparison.OrdinalIgnoreCase))
             {
                 context.CleanDirectory(dir);
                 context.Log.Information($"Cleaned {dir}");
