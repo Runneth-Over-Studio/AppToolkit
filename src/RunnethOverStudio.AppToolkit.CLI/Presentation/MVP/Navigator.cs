@@ -14,7 +14,14 @@ public class Navigator(IServiceProvider serviceProvider)
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private Presenter? _current;
 
-    internal void NavigateTo(Type nextPresenterType)
+    /// <summary>
+    /// Navigates to the specified presenter type by resolving it from the dependency injection container,
+    /// dismissing the current presenter (if any), and displaying the associated view.
+    /// </summary>
+    /// <param name="nextPresenterType">
+    /// The <see cref="Type"/> of the next presenter to navigate to. Must derive from <see cref="Presenter"/>.
+    /// </param>
+    public void NavigateTo(Type nextPresenterType)
     {
         if (typeof(Presenter).IsAssignableFrom(nextPresenterType) &&
             _serviceProvider.GetService(nextPresenterType) is Presenter nextPresenter)
