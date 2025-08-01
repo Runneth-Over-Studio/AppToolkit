@@ -3,6 +3,7 @@ using Cake.Common.IO.Paths;
 using Cake.Common.Xml;
 using Cake.Core;
 using Cake.Frosting;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace Build;
@@ -20,16 +21,7 @@ public sealed class BuildContext : FrostingContext
     public ConvertableDirectoryPath RootDirectory { get; }
     public ConvertableDirectoryPath SourceDirectory { get; }
     public string TargetFramework { get; }
-
-    public string CLIProjectName { get; }
-    public ConvertableDirectoryPath CLIProjectDirectory { get; }
-    public string CLIProjectFilePath { get; }
-    public ConvertableDirectoryPath CLIProjectOutputDirectory { get; }
-
-    public string DesktopProjectName { get; }
-    public ConvertableDirectoryPath DesktopProjectDirectory { get; }
-    public string DesktopProjectFilePath { get; }
-    public ConvertableDirectoryPath DesktopProjectOutputDirectory { get; }
+    public List<ReleaseProject> ReleaseProjects { get; }
 
     public BuildContext(ICakeContext context) : base(context)
     {
@@ -44,16 +36,33 @@ public sealed class BuildContext : FrostingContext
         RootDirectory = context.Directory("../../../");
         SourceDirectory = RootDirectory + context.Directory("src");
 
-        CLIProjectName = "RunnethOverStudio.AppToolkit.CLI";
-        CLIProjectDirectory = SourceDirectory + context.Directory(CLIProjectName);
-        CLIProjectFilePath = CLIProjectDirectory + context.File($"{CLIProjectName}.csproj");
-        CLIProjectOutputDirectory = CLIProjectDirectory + context.Directory($"bin/{Config}/{TargetFramework}");
+        ConvertableFilePath buildProjectFilePath = context.Directory("./") + context.File("Build.csproj"); // All projects should have the same target framework.
+        TargetFramework = context.XmlPeek(buildProjectFilePath, "/Project/PropertyGroup/TargetFramework");
 
-        DesktopProjectName = "RunnethOverStudio.AppToolkit.Desktop";
-        DesktopProjectDirectory = SourceDirectory + context.Directory(DesktopProjectName);
-        DesktopProjectFilePath = DesktopProjectDirectory + context.File($"{DesktopProjectName}.csproj");
-        DesktopProjectOutputDirectory = DesktopProjectDirectory + context.Directory($"bin/{Config}/{TargetFramework}");
+        ReleaseProjects =
+        [
+            SetReleaseProject(this, string.Empty),
+            SetReleaseProject(this, "CLI"),
+            SetReleaseProject(this, "Desktop")
+        ];
+    }
 
-        TargetFramework = context.XmlPeek(CLIProjectFilePath, "/Project/PropertyGroup/TargetFramework"); // All projects should have the same target framework.
+    private static ReleaseProject SetReleaseProject(BuildContext context, string projectExtension)
+    {
+        string baseProjectName = "RunnethOverStudio.AppToolkit";
+        if (!string.IsNullOrEmpty(projectExtension))
+        {
+            baseProjectName += $".{projectExtension}";
+        }
+
+        ConvertableDirectoryPath baseProjectDirectory = context.SourceDirectory + context.Directory(baseProjectName);
+
+        return new ReleaseProject
+        {
+            Name = baseProjectName,
+            Directory = baseProjectDirectory,
+            FilePath = baseProjectDirectory + context.File($"{baseProjectName}.csproj"),
+            OutputDirectory = baseProjectDirectory + context.Directory($"bin/{context.Config}/{context.TargetFramework}")
+        };
     }
 }

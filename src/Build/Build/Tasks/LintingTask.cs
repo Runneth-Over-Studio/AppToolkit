@@ -24,8 +24,13 @@ public sealed class LintingTask : FrostingTask<BuildContext>
         context.Log.Information($"Formatting solution...");
 
         string solutionPath = System.IO.Path.Combine(context.SourceDirectory, SOLUTION_NAME);
-        context.StartProcess("dotnet", $"format \"{solutionPath}\" --no-restore --report \"{context.CLIProjectOutputDirectory.Path.FullPath}\"");
-        context.StartProcess("dotnet", $"format \"{solutionPath}\" --no-restore --report \"{context.DesktopProjectOutputDirectory.Path.FullPath}\"");
+        //context.StartProcess("dotnet", $"format \"{solutionPath}\" --no-restore --report \"{context.CLIProjectOutputDirectory.Path.FullPath}\"");
+        //context.StartProcess("dotnet", $"format \"{solutionPath}\" --no-restore --report \"{context.DesktopProjectOutputDirectory.Path.FullPath}\"");
+
+        foreach (ReleaseProject project in context.ReleaseProjects)
+        {
+            context.StartProcess("dotnet", $"format \"{solutionPath}\" --no-restore --report \"{project.OutputDirectory.Path.FullPath}\"");
+        }
 
         stopwatch.Stop();
         double completionTime = Math.Round(stopwatch.Elapsed.TotalSeconds, 1);

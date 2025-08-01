@@ -17,16 +17,17 @@ public sealed class PublishTask : FrostingTask<BuildContext>
 
     public override void Run(BuildContext context)
     {
-        PublishProject(context, context.CLIProjectFilePath);
-
-        PublishProject(context, context.DesktopProjectFilePath);
+        foreach (ReleaseProject project in context.ReleaseProjects)
+        {
+            PublishProject(context, project.FilePath);
+        }
     }
 
     private static void PublishProject(BuildContext context, string projectPath)
     {
         context.DotNetPublish(projectPath, new DotNetPublishSettings
-        { 
-            Configuration = context.Config.ToString() 
+        {
+            Configuration = context.Config.ToString()
         });
     }
 }
