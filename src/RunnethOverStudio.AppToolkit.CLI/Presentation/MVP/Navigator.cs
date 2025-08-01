@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace RunnethOverStudio.AppToolkit.Presentation.MVP;
 
@@ -41,7 +42,12 @@ public class Navigator(IServiceProvider serviceProvider)
     private static View FindView(Presenter presenter)
     {
         string? name = presenter.GetType().FullName!.Replace(nameof(Presenter), nameof(View));
-        Type? type = Type.GetType(name);
+
+        // Look for the view type in all assemblies in-case the view is not in the same assembly as the presenter.
+        Type? type = AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Select(a => a.GetType(name))
+            .FirstOrDefault(t => t != null);
 
         if (type != null && Activator.CreateInstance(type) is View view)
         {
