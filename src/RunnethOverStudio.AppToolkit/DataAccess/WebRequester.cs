@@ -49,13 +49,13 @@ public sealed class WebRequester
         {
             if (requestData == null)
             {
-                using HttpClient defaultClient = _httpClientFactory.CreateClient();
+                HttpClient defaultClient = _httpClientFactory.CreateClient();
                 defaultClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
                 return await defaultClient.GetStringAsync(url);
             }
 
-            using HttpClient client = (requestData.UseCompression ? _httpClientFactory.CreateClient(COMPRESSION_CLIENT_NAME) : _httpClientFactory.CreateClient());
+            HttpClient client = (requestData.UseCompression ? _httpClientFactory.CreateClient(COMPRESSION_CLIENT_NAME) : _httpClientFactory.CreateClient());
             client.DefaultRequestHeaders.Add("Accept", "application/json");
 
             if (requestData.UserAgent != null)
@@ -85,7 +85,7 @@ public sealed class WebRequester
                     request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
                 }
 
-                HttpResponseMessage httpResponse = await client.SendAsync(request);
+                using HttpResponseMessage httpResponse = await client.SendAsync(request);
                 string response = await httpResponse.Content.ReadAsStringAsync();
                 return response;
             }
@@ -111,7 +111,7 @@ public sealed class WebRequester
             File.Delete(fullFilePath);
         }
 
-        using HttpClient client = _httpClientFactory.CreateClient();
+        HttpClient client = _httpClientFactory.CreateClient();
         await client.DownloadFileTaskAsync(new Uri(url), fullFilePath);
     }
 
@@ -125,7 +125,7 @@ public sealed class WebRequester
     /// </returns>
     public async Task<Stream> GetWebRequestStreamAsync(string url)
     {
-        HttpResponseMessage? response = await GetWebRequestResponseAsync(url);
+        using HttpResponseMessage? response = await GetWebRequestResponseAsync(url);
 
         if (response != null)
         {
@@ -146,7 +146,7 @@ public sealed class WebRequester
     /// </returns>
     public async Task<byte[]> GetWebRequestSerializedAsync(string url)
     {
-        HttpResponseMessage? response = await GetWebRequestResponseAsync(url);
+        using HttpResponseMessage? response = await GetWebRequestResponseAsync(url);
 
         if (response != null)
         {
@@ -160,7 +160,7 @@ public sealed class WebRequester
     {
         try
         {
-            using HttpClient client = _httpClientFactory.CreateClient();
+            HttpClient client = _httpClientFactory.CreateClient();
             return await client.GetAsync(url);
         }
         catch (Exception ex)
