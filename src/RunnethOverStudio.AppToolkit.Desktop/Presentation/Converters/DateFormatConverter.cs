@@ -2,7 +2,7 @@
 using System;
 using System.Globalization;
 
-namespace RunnethOverStudio.AppToolkit.Core.Converters;
+namespace RunnethOverStudio.AppToolkit.Desktop.Presentation.Converters;
 
 /// <summary>
 /// Converts <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values to and from formatted string representations.
