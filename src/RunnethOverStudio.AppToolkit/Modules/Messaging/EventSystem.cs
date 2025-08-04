@@ -8,9 +8,12 @@ namespace RunnethOverStudio.AppToolkit.Modules.Messaging;
 
 /// <summary>
 /// Provides a thread-safe implementation of <see cref="IEventSystem"/> for publishing and subscribing to events.
+/// Releases its references, including handlers, when disposed.
 /// </summary>
 /// <remarks>
-/// If you ever start to see GC pressure or performance issues, you may want to consider a more involved solution, like Disruptor-net.
+/// This implementation is intended for use within in-process applications only. It does not provide features required for distributed scenarios,
+/// such as an outbox or retries. For inter-process or distributed messaging, use a dedicated messaging infrastructure. 
+/// Also, if you ever start to see GC pressure or performance issues, you may want to consider a more involved solution like Disruptor-net.
 /// </remarks>
 public sealed class EventSystem(ILogger<IEventSystem> logger) : IEventSystem
 {
@@ -82,7 +85,7 @@ public sealed class EventSystem(ILogger<IEventSystem> logger) : IEventSystem
         GC.SuppressFinalize(this);
     }
 
-    internal void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposed)
         {
