@@ -24,28 +24,47 @@ public static class Authorizer
     /// <returns><c>true</c> if the password is valid; otherwise, <c>false</c>.</returns>
     public static bool Login(UserCredentials credential, SecureString password)
     {
-        return credential.LoginHash.EqualsByteArray(GenerateHash(
-            password.ToBytes(),
-            credential.LoginSalt,
-            credential.LoginWorkFactor));
+        byte[] pBytes = password.ToBytes();
+
+        try
+        {
+            byte[] checkHash = GenerateHash(pBytes, credential.LoginSalt, credential.LoginWorkFactor);
+
+            return CryptographicOperations.FixedTimeEquals(credential.LoginHash, checkHash);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(pBytes);
+        }
     }
 
     /// <summary>
     /// Creates a new <see cref="UserCredentials"/> instance for an application user,
     /// generating a random salt and hash for the provided password.
     /// </summary>
+    /// <remarks>
+    /// Does not enforce any password policy.
+    /// </remarks>
     /// <param name="password">The password to use for credential creation, as a <see cref="SecureString"/>.</param>
     /// <returns>A new <see cref="UserCredentials"/> object containing the generated salt, hash, and work factor.</returns>
     public static UserCredentials CreateAppCredential(SecureString password)
     {
         byte[] loginSalt = GenerateSalt();
+        byte[] pBytes = password.ToBytes();
 
-        return new UserCredentials()
+        try
         {
-            LoginSalt = loginSalt,
-            LoginHash = GenerateHash(password.ToBytes(), loginSalt, NEW_USER_WORK_FACTOR),
-            LoginWorkFactor = NEW_USER_WORK_FACTOR
-        };
+            return new UserCredentials()
+            {
+                LoginSalt = loginSalt,
+                LoginHash = GenerateHash(pBytes, loginSalt, NEW_USER_WORK_FACTOR),
+                LoginWorkFactor = NEW_USER_WORK_FACTOR
+            };
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(pBytes);
+        }
     }
 
     private static byte[] GenerateSalt()
