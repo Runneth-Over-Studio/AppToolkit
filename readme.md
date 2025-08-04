@@ -5,6 +5,15 @@
 # App Toolkit
 Runneth Over Studio common C# app development code.
 
+## Projects
+Each library is published to [NuGet](https://www.nuget.org/profiles/Runneth-Over-Studio) as its own package.
+- RunnethOverStudio.AppToolkit
+	- Core utilities, abstractions, and extension methods designed to be useful across all application types.
+- RunnethOverStudio.AppToolkit.CLI
+	- Base classes and helpers tailored for building terminal applications, specifically with [Spectre.Console](https://github.com/spectreconsole/spectre.console) integration.
+- RunnethOverStudio.AppToolkit.Desktop
+	- Components and patterns specifically for [Avalonia](https://github.com/AvaloniaUI/Avalonia) desktop applications.
+
 ## Versioning
 App Toolkit uses [Semantic Versioning](https://semver.org/).
 
