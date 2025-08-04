@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RunnethOverStudio.AppToolkit.DataAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
 /// <summary>
 /// Represents the data required to make an HTTP request with optional JSON content and custom headers.

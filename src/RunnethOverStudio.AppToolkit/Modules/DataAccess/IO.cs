@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace RunnethOverStudio.AppToolkit.DataAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
 /// <summary>
 /// Provides utility methods for file and directory operations related to application data storage.
