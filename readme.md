@@ -3,7 +3,7 @@
 </p>
 
 # App Toolkit
-Runneth Over Studio common C# app development code.
+Runneth Over Studio's common C# app development code.
 
 ## Projects
 Each library is published to [NuGet](https://www.nuget.org/profiles/Runneth-Over-Studio) as its own package.
