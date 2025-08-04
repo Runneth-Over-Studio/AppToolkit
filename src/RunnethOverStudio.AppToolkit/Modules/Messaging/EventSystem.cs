@@ -6,13 +6,19 @@ using System.Linq;
 
 namespace RunnethOverStudio.AppToolkit.Modules.Messaging;
 
-// Note: If we ever start to see GC pressure or performance issues, we may want to consider a more involved solution, like Disruptor-net.
-internal sealed class EventSystem(ILogger<IEventSystem> logger) : IEventSystem
+/// <summary>
+/// Provides a thread-safe implementation of <see cref="IEventSystem"/> for publishing and subscribing to events.
+/// </summary>
+/// <remarks>
+/// If you ever start to see GC pressure or performance issues, you may want to consider a more involved solution, like Disruptor-net.
+/// </remarks>
+public sealed class EventSystem(ILogger<IEventSystem> logger) : IEventSystem
 {
     private readonly ConcurrentDictionary<Type, ImmutableList<Delegate>> _handlers = new();
     private readonly ILogger<IEventSystem> _logger = logger;
     private bool _disposed = false;
 
+    /// <inheritdoc/>
     public void Publish<T>(object? sender, T eventData) where T : EventArgs
     {
         if (!_disposed)
@@ -41,6 +47,7 @@ internal sealed class EventSystem(ILogger<IEventSystem> logger) : IEventSystem
         }
     }
 
+    /// <inheritdoc/>
     public void Subscribe<T>(EventHandler<T> handler) where T : EventArgs
     {
         if (!_disposed)
@@ -54,6 +61,7 @@ internal sealed class EventSystem(ILogger<IEventSystem> logger) : IEventSystem
         }
     }
 
+    /// <inheritdoc/>
     public void Unsubscribe<T>(EventHandler<T> handler) where T : EventArgs
     {
         if (!_disposed)
@@ -67,6 +75,7 @@ internal sealed class EventSystem(ILogger<IEventSystem> logger) : IEventSystem
         }
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         Dispose(disposing: true);
