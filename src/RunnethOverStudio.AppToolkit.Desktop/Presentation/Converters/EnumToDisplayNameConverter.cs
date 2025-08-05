@@ -8,7 +8,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace RunnethOverStudio.AppToolkit.Desktop.Presentation.Converters;
+namespace RunnethOverStudio.AppToolkit.Presentation.Converters;
 
 /// <summary>
 /// Converts a collection of enum values to their display names using the <see cref="DisplayAttribute"/> if present.

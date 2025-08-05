@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace RunnethOverStudio.AppToolkit.Desktop.Presentation;
+namespace RunnethOverStudio.AppToolkit.Presentation;
 
 /// <summary>
 /// An observable collection that also listens for property changes on its items and raises an event when an item's property changes.

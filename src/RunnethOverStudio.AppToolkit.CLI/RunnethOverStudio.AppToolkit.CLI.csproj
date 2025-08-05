@@ -21,7 +21,7 @@
 	<PackageTags>app helpers cli spectre</PackageTags>
 	<IncludeSymbols>true</IncludeSymbols>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Version>0.4.0</Version>
+	<Version>0.4.1</Version>
 	<PackageReleaseNotes>In-development / pre-alpha.</PackageReleaseNotes>
   </PropertyGroup>
 
