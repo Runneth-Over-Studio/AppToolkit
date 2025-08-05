@@ -1,5 +1,5 @@
 <p align="left">
-  <img src="logo.png" width="175" alt="App Toolkit Logo">
+  <img src="https://raw.githubusercontent.com/Runneth-Over-Studio/AppToolkit/refs/heads/main/content/logo.png" width="175" alt="App Toolkit Logo">
 </p>
 
 # App Toolkit
