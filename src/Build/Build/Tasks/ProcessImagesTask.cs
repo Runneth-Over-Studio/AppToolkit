@@ -36,7 +36,7 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         DirectoryPath sourceContentDirectory = context.RootDirectory + context.Directory("content");
         DirectoryPath sourceLogoDirectory = sourceContentDirectory + context.Directory("logo");
         string sourceSVGPath = System.IO.Path.Combine(sourceLogoDirectory.FullPath, LOGO_SVG_FILENAME);
-        string pngPath = System.IO.Path.Combine(context.RootDirectory.Path.FullPath, "logo.png");
+        string pngPath = System.IO.Path.Combine(sourceContentDirectory.FullPath, "logo.png");
         await ConvertSvgToPngAsync(sourceSVGPath, pngPath);
 
         // Create NuGet package icon. Microsoft recommends an image resolution of 128x128 and must be either JPEG or PNG.

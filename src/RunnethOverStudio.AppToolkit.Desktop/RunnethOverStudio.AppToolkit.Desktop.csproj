@@ -21,14 +21,13 @@
 	<PackageTags>app helpers desktop avalonia</PackageTags>
 	<IncludeSymbols>true</IncludeSymbols>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Version>0.3.2</Version>
+	<Version>0.4.0</Version>
 	<PackageReleaseNotes>In-development / pre-alpha.</PackageReleaseNotes>
   </PropertyGroup>
 
-  <!-- Include readme & image files that are required by the project's resulting NuGet package. -->
+  <!-- Include files that are required by the project's resulting NuGet package. -->
   <ItemGroup>
 	<None Include="../../readme.md" Pack="true" PackagePath="readme.md" />
-	<None Include="../../logo.png" Pack="true" PackagePath="logo.png" />
 	<None Include="../../content/package-icon.png" Pack="true" PackagePath="package-icon.png" />
   </ItemGroup>
 	
