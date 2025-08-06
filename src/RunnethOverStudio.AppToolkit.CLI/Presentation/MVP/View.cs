@@ -88,16 +88,16 @@ public record ViewBranding
     /// <summary>
     /// The application title to display in the console header.
     /// </summary>
-    public string? AppTitle { get; set; }
+    public string? AppTitle { get; init; }
 
     /// <summary>
     /// The FIGlet font used to render the application title as ASCII art.
     /// If null, the app title is displayed as plain text within a styled panel.
     /// </summary>
-    public FigletFont? AppTitleFigletFont { get; set; }
+    public FigletFont? AppTitleFigletFont { get; init; }
 
     /// <summary>
     /// The primary color used for application branding in the console UI.
     /// </summary>
-    public Color PrimaryColor { get; set; } = Color.Green;
+    public Color PrimaryColor { get; init; } = Color.Green;
 }

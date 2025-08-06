@@ -2,12 +2,12 @@
 using System;
 using System.IO;
 
-namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.DataAccess.OS;
 
 /// <summary>
-/// Provides utility methods for file and directory operations related to application data storage.
+/// Provides utility methods for operating system file and directory operations.
 /// </summary>
-public static class IO
+public static class AppFileSystem
 {
     /// <summary>
     /// Gets the path to the application's local data directory, creating it if it does not exist.
@@ -41,7 +41,7 @@ public static class IO
                 FileAttributes attributes = File.GetAttributes(fullFilePath);
                 if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
-                    // Remove read-only attribute before deleting
+                    // Remove read-only attribute before deleting.
                     File.SetAttributes(fullFilePath, attributes & ~FileAttributes.ReadOnly);
                     logger?.LogInformation("Removed read-only attribute from file: {FilePath}", fullFilePath);
                 }
