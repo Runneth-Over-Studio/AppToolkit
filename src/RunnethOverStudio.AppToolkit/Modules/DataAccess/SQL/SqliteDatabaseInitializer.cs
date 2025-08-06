@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
+using RunnethOverStudio.AppToolkit.Core.Extensions;
 using RunnethOverStudio.AppToolkit.Modules.DataAccess.OS;
 using System;
 using System.Collections.Generic;
@@ -105,15 +106,11 @@ public static class SqliteDatabaseInitializer
             if (!assemblyType.IsAbstract && typeof(BaseMigration).IsAssignableFrom(assemblyType))
             {
                 string name = assemblyType.Name;
-                int underscoreIndex = name.LastIndexOf('_');
-                if (underscoreIndex >= 0 && underscoreIndex < name.Length - 1)
-                {
-                    string numberPart = name[(underscoreIndex + 1)..];
+                string numPart = name.GetAfterLast('_');
 
-                    if (uint.TryParse(numberPart, out uint migrationNumber) && migrationNumber >= startingNumber)
-                    {
-                        migrations.Add((BaseMigration)Activator.CreateInstance(assemblyType)!);
-                    }
+                if (uint.TryParse(numPart, out uint migrationNumber) && migrationNumber >= startingNumber)
+                {
+                    migrations.Add((BaseMigration)Activator.CreateInstance(assemblyType)!);
                 }
             }
         }
