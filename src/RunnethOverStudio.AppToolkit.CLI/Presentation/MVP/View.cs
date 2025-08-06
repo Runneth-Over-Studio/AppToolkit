@@ -11,13 +11,11 @@ namespace RunnethOverStudio.AppToolkit.Presentation.MVP;
 public abstract class View
 {
     /// <summary>
-    /// Represents the stylized ASCII art text for the application title.
+    /// Gets or sets the application information used for branding and display in views.
+    /// This property can be set at application startup to provide a consistent title, font, and color scheme
+    /// for all derived views when rendering headers or clearing the console.
     /// </summary>
-    /// <remarks>
-    /// Optionally set this field once at application startup (e.g., <c>View.AppTitleFiglet = new FigletText("My App");</c>)
-    /// so that all derived views will display this title when clearing the console.
-    /// </remarks>
-    public static FigletText? AppTitleFiglet { get; set; }
+    public static ViewBranding? ViewBranding { get; set; }
 
     /// <summary>
     /// The format string used for displaying prompts in a CLI application.
@@ -59,10 +57,47 @@ public abstract class View
     {
         AnsiConsole.Clear();
 
-        if (AppTitleFiglet != null)
+        if (!string.IsNullOrEmpty(ViewBranding?.AppTitle))
         {
-            AnsiConsole.Write(AppTitleFiglet);
+            // Display ASCII header if FIGlet font is provided, otherwise use a simple panel.
+            if (ViewBranding.AppTitleFigletFont != null)
+            {
+                FigletText figlet = new FigletText(ViewBranding.AppTitleFigletFont, ViewBranding.AppTitle).Color(ViewBranding.PrimaryColor);
+                AnsiConsole.Write(figlet);
+            }
+            else
+            {
+                AnsiConsole.Write(new Panel($"[{ViewBranding.PrimaryColor}]{ViewBranding.AppTitle}[/]")
+                {
+                    Border = BoxBorder.Heavy,
+                    BorderStyle = new Style(ViewBranding.PrimaryColor)
+                });
+            }
+
             AnsiConsole.Write(Environment.NewLine);
         }
     }
+}
+
+/// <summary>
+/// Represents application branding information, including the title, optional FIGlet font, and primary color.
+/// Used by views to display consistent application headers and styling.
+/// </summary>
+public record ViewBranding
+{
+    /// <summary>
+    /// The application title to display in the console header.
+    /// </summary>
+    public string? AppTitle { get; set; }
+
+    /// <summary>
+    /// The FIGlet font used to render the application title as ASCII art.
+    /// If null, the app title is displayed as plain text within a styled panel.
+    /// </summary>
+    public FigletFont? AppTitleFigletFont { get; set; }
+
+    /// <summary>
+    /// The primary color used for application branding in the console UI.
+    /// </summary>
+    public Color PrimaryColor { get; set; } = Color.Green;
 }
