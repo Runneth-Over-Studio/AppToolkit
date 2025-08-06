@@ -40,8 +40,7 @@ public abstract class BaseMigration
 
         dbConnection.Execute(sql, param: new
         {
-            Number = this.Number(),
-            AppliedOn = DateTime.UtcNow.ToString("o") // ISO 8601 format
+            Number = this.Number()
         });
     }
 }

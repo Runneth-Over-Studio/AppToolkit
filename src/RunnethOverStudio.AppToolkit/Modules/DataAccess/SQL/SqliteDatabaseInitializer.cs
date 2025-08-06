@@ -45,9 +45,7 @@ public static class SqliteDatabaseInitializer
     {
         lock (_initLock)
         {
-            string appFolderPath = AppFileSystem.GetAppDirectoryPath();
-            string appName = new DirectoryInfo(appFolderPath).Name;
-            string dbPath = Path.Join(appFolderPath, $"{appName}.db");
+            string dbPath = GetDBPath();
 
             try
             {
@@ -77,7 +75,7 @@ public static class SqliteDatabaseInitializer
             CREATE TABLE IF NOT EXISTS Migration (
                 MigrationId INTEGER PRIMARY KEY AUTOINCREMENT,
                 Number INTEGER NOT NULL,
-                AppliedOn TEXT NOT NULL
+                AppliedOn TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
             );
         ";
 
