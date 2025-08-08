@@ -4,6 +4,7 @@ namespace RunnethOverStudio.AppToolkit.Core
 {
     public static class Enums
     {
+        #region StatusCodes
         /// <summary>
         /// Represents general status codes for in-process requests and operations.
         /// These codes are inspired by HTTP status codes but are intended for use in any application context,
@@ -73,5 +74,6 @@ namespace RunnethOverStudio.AppToolkit.Core
             [Display(Name = "Authentication Required")]
             AuthenticationRequired = 511
         }
+        #endregion
     }
 }
