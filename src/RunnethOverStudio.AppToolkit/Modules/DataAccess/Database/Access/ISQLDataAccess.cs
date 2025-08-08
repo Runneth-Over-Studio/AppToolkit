@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
@@ -15,22 +16,24 @@ public interface ISQLDataAccess
     /// </summary>
     /// <typeparam name="T">The type of the entity to insert.</typeparam>
     /// <param name="entity">The entity to insert.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>
     /// A <see cref="Task{TResult}"/> representing the asynchronous operation.
     /// The task result contains the new primary key as a <see cref="long"/> if successful; otherwise, <c>null</c>.
     /// </returns>
-    Task<long?> CreateAsync<T>(T entity);
+    Task<long?> CreateAsync<T>(T entity, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Asynchronously executes a raw SQL read query against the database and returns the results as a sequence of dynamic objects.
     /// </summary>
     /// <param name="sql">The raw SQL query to execute.</param>
     /// <param name="parameters">An optional object containing the parameters to use with the query.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>
     /// A <see cref="Task{TResult}"/> representing the asynchronous operation.
     /// The task result contains an <see cref="IEnumerable{dynamic}"/> with the results of the query.
     /// </returns>
-    Task<IEnumerable<dynamic>> ReadRawAsync(string sql, object? parameters = null);
+    Task<IEnumerable<dynamic>> ReadRawAsync(string sql, object? parameters = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Asynchronously reads all rows from the table corresponding to the specified type <typeparamref name="T"/>.
@@ -39,12 +42,13 @@ public interface ISQLDataAccess
     /// <typeparam name="T">The type whose table to read from. The table name must match the type name.</typeparam>
     /// <param name="whereClause">Optional SQL WHERE clause (without the 'WHERE' keyword) to filter results.</param>
     /// <param name="parameters">Optional parameters for the WHERE clause.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <param name="columns">Optional array of column names to retrieve.</param>
     /// <returns>
     /// A <see cref="Task{TResult}"/> representing the asynchronous operation.
     /// The task result contains an <see cref="IEnumerable{T}"/> representing all (or filtered) rows in the table.
     /// </returns>
-    Task<IEnumerable<T>> ReadAsync<T>(string? whereClause = null, object? parameters = null, params string[]? columns);
+    Task<IEnumerable<T>> ReadAsync<T>(string? whereClause = null, object? parameters = null, CancellationToken cancellationToken = default, params string[]? columns);
 
     /// <summary>
     /// Asynchronously reads a single row from the table corresponding to the specified type <typeparamref name="T"/> by primary key,
@@ -52,12 +56,13 @@ public interface ISQLDataAccess
     /// </summary>
     /// <typeparam name="T">The type to which the result should be mapped. The table name must match the type name.</typeparam>
     /// <param name="key">The primary key value of the row to retrieve.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <param name="columns">An optional array of column names to retrieve. If null or empty, all columns are selected.</param>
     /// <returns>
     /// A <see cref="Task{TResult}"/> representing the asynchronous operation.
     /// The task result contains the row mapped to <typeparamref name="T"/> if found; otherwise, <c>null</c>.
     /// </returns>
-    Task<T?> ReadByPrimaryKeyAsync<T>(long key, params string[]? columns);
+    Task<T?> ReadByPrimaryKeyAsync<T>(long key, CancellationToken cancellationToken = default, params string[]? columns);
 
     /// <summary>
     /// Asynchronously updates a row in the table corresponding to the specified type <typeparamref name="T"/> by primary key,
@@ -66,20 +71,22 @@ public interface ISQLDataAccess
     /// <typeparam name="T">The type whose table to update. The table name must match the type name.</typeparam>
     /// <param name="key">The primary key value of the row to update.</param>
     /// <param name="columnValues">A dictionary of column names and their new values.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>
     /// A <see cref="Task{TResult}"/> representing the asynchronous operation.
     /// The task result is <c>true</c> if a row was updated; otherwise, <c>false</c>.
     /// </returns>
-    Task<bool> UpdateByPrimaryKeyAsync<T>(long key, IDictionary<string, object?> columnValues);
+    Task<bool> UpdateByPrimaryKeyAsync<T>(long key, IDictionary<string, object?> columnValues, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Asynchronously deletes a row from the table corresponding to the specified type <typeparamref name="T"/> by primary key.
     /// </summary>
     /// <typeparam name="T">The type whose table to delete from. The table name must match the type name.</typeparam>
     /// <param name="key">The primary key value of the row to delete.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>
     /// A <see cref="Task{TResult}"/> representing the asynchronous operation.
     /// The task result is <c>true</c> if a row was deleted; otherwise, <c>false</c>.
     /// </returns>
-    Task<bool> DeleteByPrimaryKeyAsync<T>(long key);
+    Task<bool> DeleteByPrimaryKeyAsync<T>(long key, CancellationToken cancellationToken = default);
 }
