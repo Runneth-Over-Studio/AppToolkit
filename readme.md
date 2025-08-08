@@ -5,6 +5,9 @@
 # App Toolkit
 Runneth Over Studio's common C# app development code.
 
+## Purpose
+This library is designed to accelerate the development of prototypes, in-house utilities, and narrowly focused applications. It is not intended for use in large-scale, robust enterprise systems. The primary goal is to enable rapid domain-specific feature development by providing reusable components and eliminating the need to maintain boilerplate code across multiple projects. By leveraging this library, developers can focus on delivering core functionality without being burdened by repetitive infrastructure concerns.
+
 ## Projects
 Each library is published to [NuGet](https://www.nuget.org/profiles/Runneth-Over-Studio) as its own package.
 - RunnethOverStudio.AppToolkit
