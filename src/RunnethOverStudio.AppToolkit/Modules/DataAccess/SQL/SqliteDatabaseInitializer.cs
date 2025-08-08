@@ -98,16 +98,19 @@ public static class SqliteDatabaseInitializer
     {
         List<BaseMigration> migrations = [];
 
-        foreach (Type assemblyType in Assembly.GetExecutingAssembly().GetTypes())
+        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (!assemblyType.IsAbstract && typeof(BaseMigration).IsAssignableFrom(assemblyType))
+            foreach (Type assemblyType in assembly.GetTypes())
             {
-                string name = assemblyType.Name;
-                string numPart = name.GetAfterLast('_');
-
-                if (uint.TryParse(numPart, out uint migrationNumber) && migrationNumber >= startingNumber)
+                if (!assemblyType.IsAbstract && typeof(BaseMigration).IsAssignableFrom(assemblyType))
                 {
-                    migrations.Add((BaseMigration)Activator.CreateInstance(assemblyType)!);
+                    string name = assemblyType.Name;
+                    string numPart = name.GetAfterLast('_');
+
+                    if (uint.TryParse(numPart, out uint migrationNumber) && migrationNumber >= startingNumber)
+                    {
+                        migrations.Add((BaseMigration)Activator.CreateInstance(assemblyType)!);
+                    }
                 }
             }
         }
