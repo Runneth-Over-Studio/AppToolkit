@@ -1,13 +1,16 @@
 ﻿using Dapper;
-using System;
 using System.Data.Common;
 
-namespace RunnethOverStudio.AppToolkit.Modules.DataAccess.SQL;
+namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
 /// <summary>
 /// Represents the base class for all database migrations.
 /// Provides a template for executing migration logic and updating the migration tracking table.
 /// </summary>
+/// <remarks>
+/// When creating tables, define primary key columns with <c>INTEGER PRIMARY KEY AUTOINCREMENT</c> 
+/// so that the column is made to be an alias for the internal ROWID.
+/// </remarks>
 public abstract class BaseMigration
 {
     /// <summary>
@@ -34,13 +37,13 @@ public abstract class BaseMigration
     private void UpdateMigrationTable(DbConnection dbConnection)
     {
         const string sql = @"
-            INSERT INTO Migration (Number, AppliedOn)
-            VALUES (@Number, @AppliedOn);
+            INSERT INTO Migration (Number)
+            VALUES (@Number);
         ";
 
         dbConnection.Execute(sql, param: new
         {
-            Number = this.Number()
+            Number = Number()
         });
     }
 }

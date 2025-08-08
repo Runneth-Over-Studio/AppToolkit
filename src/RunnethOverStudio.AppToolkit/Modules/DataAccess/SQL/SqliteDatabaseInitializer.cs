@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
 using RunnethOverStudio.AppToolkit.Core.Extensions;
-using RunnethOverStudio.AppToolkit.Modules.DataAccess.OS;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace RunnethOverStudio.AppToolkit.Modules.DataAccess.SQL;
+namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
 /// <summary>
 /// Provides methods to ensure the application's database is created and up-to-date.

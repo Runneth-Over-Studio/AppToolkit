@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace RunnethOverStudio.AppToolkit.Modules.DataAccess.OS;
+namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
 /// <summary>
 /// Provides utility methods for operating system file and directory operations.

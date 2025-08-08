@@ -3,20 +3,14 @@
 namespace RunnethOverStudio.AppToolkit.Modules.UserAccess;
 
 /// <summary>
-/// Represents a data transfer object containing credential information for a user,
-/// including identifiers, cryptographic salt and hash, and password hashing parameters.
+/// Represents a data transfer object containing cryptographic credential information.
 /// </summary>
 public record EndUserCredential
 {
     /// <summary>
-    /// Unique identifier for the user credential entry.
+    /// Gets or sets the unique identifier of the associated end user.
     /// </summary>
-    public int EndUserCredentialId { get; init; }
-
-    /// <summary>
-    /// Identifier of the end user associated with these credentials.
-    /// </summary>
-    public int EndUserId { get; init; }
+    public long? EndUserId { get; set; }
 
     /// <summary>
     /// Cryptographic salt used for hashing the user's login credentials.
