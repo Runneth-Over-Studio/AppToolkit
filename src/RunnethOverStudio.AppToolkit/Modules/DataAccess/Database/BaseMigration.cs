@@ -8,7 +8,7 @@ namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 /// Provides a template for executing migration logic and updating the migration tracking table.
 /// </summary>
 /// <remarks>
-/// When creating tables, define primary key columns with <c>INTEGER PRIMARY KEY AUTOINCREMENT</c> 
+/// When creating tables in SQLite, define primary key columns with <c>INTEGER PRIMARY KEY AUTOINCREMENT</c> 
 /// so that the column is made to be an alias for the internal ROWID.
 /// </remarks>
 public abstract class BaseMigration
@@ -22,6 +22,9 @@ public abstract class BaseMigration
     /// Executes the migration and updates the migration tracking table.
     /// </summary>
     /// <param name="dbConnection">The database connection to use for the migration.</param>
+    /// <exception cref="DbException">
+    /// Thrown if the <c>Migration</c> table does not exist or does not contain a <c>Number</c> column.
+    /// </exception>
     public void Run(DbConnection dbConnection)
     {
         Execute(dbConnection);

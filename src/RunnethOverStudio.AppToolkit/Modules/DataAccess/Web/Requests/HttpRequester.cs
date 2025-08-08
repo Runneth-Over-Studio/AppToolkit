@@ -31,7 +31,7 @@ public sealed class HttpRequester : IHttpRequester
     /// </summary>
     /// <param name="httpClientFactory">The HTTP client factory used to create <see cref="HttpClient"/> instances.</param>
     /// <param name="logger">The logger used for error and status messages.</param>
-    public HttpRequester(IHttpClientFactory httpClientFactory, ILogger logger)
+    public HttpRequester(IHttpClientFactory httpClientFactory, ILogger<IHttpRequester> logger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;

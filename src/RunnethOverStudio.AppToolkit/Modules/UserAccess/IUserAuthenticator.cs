@@ -9,14 +9,14 @@ namespace RunnethOverStudio.AppToolkit.Modules.UserAccess;
 public interface IUserAuthenticator
 {
     /// <summary>
-    /// Creates a new <see cref="EndUserCredential"/> instance for an application user,
+    /// Creates a new <see cref="CryptographyCredential"/> instance for an application user,
     /// generating a random salt and hash for the provided password.
     /// </summary>
     /// <param name="password">The password to use for credential creation, as a <see cref="SecureString"/>.</param>
     /// <returns>
-    /// A new <see cref="EndUserCredential"/> object containing the generated salt, hash, and work factor.
+    /// A new <see cref="CryptographyCredential"/> object containing the generated salt, hash, and work factor.
     /// </returns>
-    public EndUserCredential CreateUserCredentials(SecureString password);
+    public CryptographyCredential CreateUserCredentials(SecureString password);
 
     /// <summary>
     /// Verifies a user's password against the stored credentials.
@@ -26,5 +26,5 @@ public interface IUserAuthenticator
     /// <returns>
     /// <c>true</c> if the password is valid; otherwise, <c>false</c>.
     /// </returns>
-    public bool VerifyCredentials(EndUserCredential credential, SecureString password);
+    public bool VerifyCredentials(CryptographyCredential credential, SecureString password);
 }

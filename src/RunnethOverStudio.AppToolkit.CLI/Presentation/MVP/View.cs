@@ -31,11 +31,11 @@ public abstract class View
     /// Displays information about a failed process to the user using Spectre.Console formatting.
     /// Can be overridden to provide custom failure handling or messaging.
     /// </summary>
-    public virtual void ShowProcessFail(string processName, ProcessResult processResult)
+    public virtual void ShowProcessFail<T>(string processName, ProcessResult<T> processResult)
     {
         if (!processResult.Errors.IsEmpty)
         {
-            string errorMessage = processResult.ToStringBulleted('*');
+            string errorMessage = processResult.ErrorsBulleted('*');
 
             AnsiConsole.MarkupLineInterpolated($"[red]{processName} failed[/]: {errorMessage}");
         }

@@ -34,14 +34,14 @@ public sealed class UserAuthenticator : IUserAuthenticator
     /// <remarks>
     /// Does not enforce any password policy.
     /// </remarks>
-    public EndUserCredential CreateUserCredentials(SecureString password)
+    public CryptographyCredential CreateUserCredentials(SecureString password)
     {
         byte[] loginSalt = GenerateSalt();
         byte[] pBytes = password.ToBytes();
 
         try
         {
-            return new EndUserCredential()
+            return new CryptographyCredential()
             {
                 LoginSalt = loginSalt,
                 LoginHash = GenerateHash(pBytes, loginSalt, _newUserWorkFactor),
@@ -55,7 +55,7 @@ public sealed class UserAuthenticator : IUserAuthenticator
     }
 
     /// <inheritdoc/>
-    public bool VerifyCredentials(EndUserCredential credential, SecureString password)
+    public bool VerifyCredentials(CryptographyCredential credential, SecureString password)
     {
         byte[] pBytes = password.ToBytes();
 
