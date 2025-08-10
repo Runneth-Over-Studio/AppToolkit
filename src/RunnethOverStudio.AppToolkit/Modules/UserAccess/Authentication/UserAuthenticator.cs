@@ -14,18 +14,18 @@ namespace RunnethOverStudio.AppToolkit.Modules.UserAccess;
 /// </remarks>
 public sealed class UserAuthenticator : IUserAuthenticator
 {
-    private const int SALT_LENGTH = 32;
-    private const int DEFAULT_NEW_USER_WORK_FACTOR = 10000;
-
-    private readonly int _newUserWorkFactor;
+    private readonly CryptographyConfig _cryptographyConfig;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UserAuthenticator"/> class with an optional work factor for hashing new passwords.
+    /// Initializes a new instance of the <see cref="UserAuthenticator"/> class with optional cryptographic configuration settings.
     /// </summary>
-    /// <param name="newUserWorkFactor">The work factor (number of iterations) to use for new user password hashes. If not specified, a default value is used.</param>
-    public UserAuthenticator(int? newUserWorkFactor = null)
+    /// <param name="cryptographyConfig">
+    /// The configuration settings for cryptographic operations, such as salt length, work factor, and hash algorithm.
+    /// If <c>null</c>, default settings will be used.
+    /// </param>
+    public UserAuthenticator(CryptographyConfig? cryptographyConfig = null)
     {
-        _newUserWorkFactor = newUserWorkFactor ?? DEFAULT_NEW_USER_WORK_FACTOR;
+        _cryptographyConfig = cryptographyConfig ?? new CryptographyConfig();
     }
 
     /// <inheritdoc/>
@@ -42,8 +42,8 @@ public sealed class UserAuthenticator : IUserAuthenticator
             return new CryptographyCredential()
             {
                 LoginSalt = loginSalt,
-                LoginHash = GenerateHash(pBytes, loginSalt, _newUserWorkFactor),
-                LoginWorkFactor = _newUserWorkFactor
+                LoginHash = GenerateHash(pBytes, loginSalt, _cryptographyConfig.NewUserWorkFactor),
+                LoginWorkFactor = _cryptographyConfig.NewUserWorkFactor
             };
         }
         finally
@@ -69,9 +69,9 @@ public sealed class UserAuthenticator : IUserAuthenticator
         }
     }
 
-    private static byte[] GenerateSalt()
+    private byte[] GenerateSalt()
     {
-        byte[] bytes = new byte[SALT_LENGTH];
+        byte[] bytes = new byte[_cryptographyConfig.SaltLength];
 
         using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
         {
@@ -81,9 +81,9 @@ public sealed class UserAuthenticator : IUserAuthenticator
         return bytes;
     }
 
-    private static byte[] GenerateHash(byte[] password, byte[] salt, int workFactor)
+    private byte[] GenerateHash(byte[] password, byte[] salt, int workFactor)
     {
-        using Rfc2898DeriveBytes deriveBytes = new(password, salt, workFactor, HashAlgorithmName.SHA256);
-        return deriveBytes.GetBytes(SALT_LENGTH);
+        using Rfc2898DeriveBytes deriveBytes = new(password, salt, workFactor, _cryptographyConfig.AlgorithmName);
+        return deriveBytes.GetBytes(_cryptographyConfig.SaltLength);
     }
 }
