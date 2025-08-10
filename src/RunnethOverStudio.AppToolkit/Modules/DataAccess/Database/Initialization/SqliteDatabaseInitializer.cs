@@ -129,26 +129,26 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
 
     private static void RunMigrations(DbConnection connection, uint startingNumber)
     {
-        List<BaseMigration> migrations = [];
+        List<BaseSQLiteMigration> migrations = [];
 
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
             foreach (Type assemblyType in assembly.GetTypes())
             {
-                if (!assemblyType.IsAbstract && typeof(BaseMigration).IsAssignableFrom(assemblyType))
+                if (!assemblyType.IsAbstract && typeof(BaseSQLiteMigration).IsAssignableFrom(assemblyType))
                 {
                     string name = assemblyType.Name;
                     string numPart = name.GetAfterLast('_');
 
                     if (uint.TryParse(numPart, out uint migrationNumber) && migrationNumber >= startingNumber)
                     {
-                        migrations.Add((BaseMigration)Activator.CreateInstance(assemblyType)!);
+                        migrations.Add((BaseSQLiteMigration)Activator.CreateInstance(assemblyType)!);
                     }
                 }
             }
         }
 
-        foreach (BaseMigration migration in migrations.OrderBy(m => m.Number()))
+        foreach (BaseSQLiteMigration migration in migrations.OrderBy(m => m.Number()))
         {
             migration.Run(connection);
         }

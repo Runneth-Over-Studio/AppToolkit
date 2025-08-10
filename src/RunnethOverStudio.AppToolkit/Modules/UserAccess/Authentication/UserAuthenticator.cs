@@ -22,9 +22,7 @@ public sealed class UserAuthenticator : IUserAuthenticator
     /// <summary>
     /// Initializes a new instance of the <see cref="UserAuthenticator"/> class with an optional work factor for hashing new passwords.
     /// </summary>
-    /// <param name="newUserWorkFactor">
-    /// The work factor (number of iterations) to use for new user password hashes. If not specified, a default value is used.
-    /// </param>
+    /// <param name="newUserWorkFactor">The work factor (number of iterations) to use for new user password hashes. If not specified, a default value is used.</param>
     public UserAuthenticator(int? newUserWorkFactor = null)
     {
         _newUserWorkFactor = newUserWorkFactor ?? DEFAULT_NEW_USER_WORK_FACTOR;
