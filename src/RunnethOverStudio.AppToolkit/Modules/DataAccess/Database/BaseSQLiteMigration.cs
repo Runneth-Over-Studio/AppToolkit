@@ -15,9 +15,14 @@ namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 public abstract class BaseSQLiteMigration
 {
     /// <summary>
-    /// Gets the unique migration number.
+    /// The unique migration number.
     /// </summary>
-    public abstract uint Number();
+    public abstract uint Number { get; init; }
+
+    /// <summary>
+    /// A brief, human-readable description of the migration's purpose or changes.
+    /// </summary>
+    public abstract string Description { get; init; }
 
     /// <summary>
     /// Executes the migration and updates the migration tracking table.
@@ -32,12 +37,11 @@ public abstract class BaseSQLiteMigration
     public void Run(DbConnection dbConnection)
     {
         // Check if this migration number already exists.
-        uint migrationNumber = Number();
         const string checkSql = @"SELECT COUNT(1) FROM Migration WHERE Number = @Number;";
-        int exists = dbConnection.ExecuteScalar<int>(checkSql, new { Number = migrationNumber });
+        int exists = dbConnection.ExecuteScalar<int>(checkSql, new { Number = this.Number });
         if (exists > 0)
         {
-            throw new InvalidOperationException($"Migration number {migrationNumber} has already been applied.");
+            throw new InvalidOperationException($"Migration number {this.Number} has already been applied.");
         }
 
         using DbTransaction transaction = dbConnection.BeginTransaction();
@@ -64,10 +68,10 @@ public abstract class BaseSQLiteMigration
     private void UpdateMigrationTable(DbConnection dbConnection, DbTransaction transaction)
     {
         const string sql = @"
-            INSERT INTO Migration (Number)
-            VALUES (@Number);
+            INSERT INTO Migration (Number, Description)
+            VALUES (@Number, @Description);
         ";
 
-        dbConnection.Execute(sql, param: new { Number = Number() }, transaction: transaction);
+        dbConnection.Execute(sql, param: new { this.Number, this.Description }, transaction: transaction);
     }
 }
