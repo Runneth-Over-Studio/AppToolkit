@@ -102,9 +102,10 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         // Create Migration table
         const string createMigrationTable = @"
             CREATE TABLE IF NOT EXISTS Migration (
-                MigrationId INTEGER PRIMARY KEY AUTOINCREMENT,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                CreatedAt TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
                 Number INTEGER NOT NULL,
-                AppliedOn TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+                Description TEXT NOT NULL;
             );
         ";
 
@@ -136,11 +137,9 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
                     && typeof(BaseSQLiteMigration).IsAssignableFrom(assemblyType) 
                     && Activator.CreateInstance(assemblyType) is BaseSQLiteMigration migration)
                 {
-                    uint migrationNumber = migration.Number();
-
-                    if (migrationNumber >= startingNumber)
+                    if (migration.Number >= startingNumber)
                     {
-                        migrations.Add(migrationNumber, migration);
+                        migrations.Add(migration.Number, migration);
                     }
                 }
             }
