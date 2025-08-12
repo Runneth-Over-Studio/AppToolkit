@@ -2,13 +2,10 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using RunnethOverStudio.AppToolkit.Core;
-using RunnethOverStudio.AppToolkit.Core.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using static RunnethOverStudio.AppToolkit.Core.Enums;
 
@@ -129,26 +126,27 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
 
     private static void RunMigrations(DbConnection connection, uint startingNumber)
     {
-        List<BaseSQLiteMigration> migrations = [];
+        SortedList<uint, BaseSQLiteMigration> migrations = [];
 
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
             foreach (Type assemblyType in assembly.GetTypes())
             {
-                if (!assemblyType.IsAbstract && typeof(BaseSQLiteMigration).IsAssignableFrom(assemblyType))
+                if (!assemblyType.IsAbstract 
+                    && typeof(BaseSQLiteMigration).IsAssignableFrom(assemblyType) 
+                    && Activator.CreateInstance(assemblyType) is BaseSQLiteMigration migration)
                 {
-                    string name = assemblyType.Name;
-                    string numPart = name.GetAfterLast('_');
+                    uint migrationNumber = migration.Number();
 
-                    if (uint.TryParse(numPart, out uint migrationNumber) && migrationNumber >= startingNumber)
+                    if (migrationNumber >= startingNumber)
                     {
-                        migrations.Add((BaseSQLiteMigration)Activator.CreateInstance(assemblyType)!);
+                        migrations.Add(migrationNumber, migration);
                     }
                 }
             }
         }
 
-        foreach (BaseSQLiteMigration migration in migrations.OrderBy(m => m.Number()))
+        foreach (BaseSQLiteMigration migration in migrations.Values)
         {
             migration.Run(connection);
         }
