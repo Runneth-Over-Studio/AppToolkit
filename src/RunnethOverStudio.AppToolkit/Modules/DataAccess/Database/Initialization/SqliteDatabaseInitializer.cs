@@ -133,8 +133,8 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         {
             foreach (Type assemblyType in assembly.GetTypes())
             {
-                if (!assemblyType.IsAbstract 
-                    && typeof(BaseSQLiteMigration).IsAssignableFrom(assemblyType) 
+                if (!assemblyType.IsAbstract
+                    && typeof(BaseSQLiteMigration).IsAssignableFrom(assemblyType)
                     && Activator.CreateInstance(assemblyType) is BaseSQLiteMigration migration)
                 {
                     if (migration.Number >= startingNumber)
