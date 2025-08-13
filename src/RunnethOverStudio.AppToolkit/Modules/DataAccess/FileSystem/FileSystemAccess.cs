@@ -2,7 +2,6 @@
 using RunnethOverStudio.AppToolkit.Core;
 using System;
 using System.IO;
-using static RunnethOverStudio.AppToolkit.Core.Enums;
 
 namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
@@ -38,7 +37,7 @@ public sealed class FileSystemAccess : IFileSystemAccess
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to get or create application directory.");
-            return ProcessResult<string>.Failure(string.Empty, StatusCodes.InternalError, ex);
+            return ProcessResult<string>.Failure(new Exception("Failed to get or create application directory.", innerException: ex));
         }
     }
 
@@ -64,13 +63,13 @@ public sealed class FileSystemAccess : IFileSystemAccess
             {
                 FileNotFoundException ex = new("Attempted to delete a file that does not exist.", fullFilePath);
                 _logger?.LogWarning(ex, "Nothing to delete.");
-                return ProcessResult<bool>.Failure(false, StatusCodes.NotFound, ex);
+                return ProcessResult<bool>.Failure(ex);
             }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to delete file: {FilePath}", fullFilePath);
-            return ProcessResult<bool>.Failure(false, StatusCodes.InternalError, ex);
+            return ProcessResult<bool>.Failure(new Exception($"Failed to delete file: {fullFilePath}", innerException: ex));
         }
     }
 }

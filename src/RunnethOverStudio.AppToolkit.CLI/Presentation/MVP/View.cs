@@ -33,11 +33,9 @@ public abstract class View
     /// </summary>
     public virtual void ShowProcessFail<T>(string processName, ProcessResult<T> processResult)
     {
-        if (!processResult.Errors.IsEmpty)
+        if (!processResult.IsSuccessful)
         {
-            string errorMessage = processResult.ErrorsBulleted('*');
-
-            AnsiConsole.MarkupLineInterpolated($"[red]{processName} failed[/]: {errorMessage}");
+            AnsiConsole.MarkupLineInterpolated($"[red]{processName} failed[/]: {processResult.Error}");
         }
         else
         {

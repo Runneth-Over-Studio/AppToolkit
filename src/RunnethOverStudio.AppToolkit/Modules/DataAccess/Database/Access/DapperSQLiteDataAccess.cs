@@ -33,14 +33,14 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
     {
         ProcessResult<string> dbPathResult = databaseInitializer.GetDBPath();
 
-        if (!dbPathResult.IsValid)
+        if (!dbPathResult.IsSuccessful)
         {
             Exception badPathEx = new("Unable to determine path to database. Cannot continue with establishing data access.");
             logger.LogError(badPathEx, "Database path retrieval failed.");
             throw badPathEx;
         }
 
-        if (!databaseInitializer.InitializeDatabase().IsValid)
+        if (!databaseInitializer.InitializeDatabase().IsSuccessful)
         {
             Exception badInitEx = new("Database initialization failed. Cannot continue with establishing data access.");
             logger.LogError(badInitEx, "Database initialization failed.");
@@ -48,7 +48,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
         }
 
         _logger = logger;
-        _dbPath = dbPathResult.Content;
+        _dbPath = dbPathResult.Value;
     }
 
     /// <inheritdoc/>

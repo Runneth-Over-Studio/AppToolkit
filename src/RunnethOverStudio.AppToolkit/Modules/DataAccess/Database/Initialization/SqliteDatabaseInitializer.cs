@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Reflection;
-using static RunnethOverStudio.AppToolkit.Core.Enums;
 
 namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
@@ -39,7 +38,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
     public ProcessResult<string> GetDBPath()
     {
         ProcessResult<string> appDirectoryResult = _fileSystemAccess.GetAppDirectoryPath();
-        if (!appDirectoryResult.IsValid)
+        if (!appDirectoryResult.IsSuccessful)
         {
             _logger.LogError("Failed to retrieve path to the application's SQLite database file.");
             return appDirectoryResult;
@@ -47,7 +46,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
 
         try
         {
-            string appFolderPath = _fileSystemAccess.GetAppDirectoryPath().Content;
+            string appFolderPath = appDirectoryResult.Value;
             string appName = new DirectoryInfo(appFolderPath).Name;
             string dbPath = Path.Join(appFolderPath, $"{appName}.db"); ;
             return ProcessResult<string>.Success(dbPath);
@@ -55,7 +54,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to retrieve path to the application's SQLite database file.");
-            return ProcessResult<string>.Failure(string.Empty, StatusCodes.InternalError, ex);
+            return ProcessResult<string>.Failure(ex);
         }
     }
 
@@ -65,15 +64,15 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         lock (_initLock)
         {
             ProcessResult<string> dbPathResult = GetDBPath();
-            if (!dbPathResult.IsValid)
+            if (!dbPathResult.IsSuccessful)
             {
                 _logger.LogError("Failed to initialize database.");
-                return ProcessResult<bool>.Failure(false, StatusCodes.InternalError, [.. dbPathResult.Errors]);
+                return ProcessResult<bool>.Failure(new Exception("Failed to initialize database.", innerException: dbPathResult.Error));
             }
 
             try
             {
-                string dbPath = dbPathResult.Content;
+                string dbPath = dbPathResult.Value;
 
                 if (File.Exists(dbPath))
                 {
@@ -89,7 +88,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
             catch (Exception ex)
             {
                 _logger.LogError("Failed to initialize database.");
-                return ProcessResult<bool>.Failure(false, StatusCodes.InternalError, ex);
+                return ProcessResult<bool>.Failure(new Exception("Failed to initialize database.", innerException: ex));
             }
         }
     }

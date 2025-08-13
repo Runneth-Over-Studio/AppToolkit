@@ -1,115 +1,112 @@
-﻿using RunnethOverStudio.AppToolkit.Core.Extensions;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using static RunnethOverStudio.AppToolkit.Core.Enums;
+﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 
 namespace RunnethOverStudio.AppToolkit.Core;
 
 /// <summary>
-/// Represents the result of a process, including any exceptions that occurred, overall status, and content value.
+/// Represents a result of operation which can be the actual result or exception.
 /// </summary>
-/// <typeparam name="T">
-/// The type of the content or result value produced by the process.
-/// </typeparam>
+/// <typeparam name="T">The type of the value stored in the Result.</typeparam>
+/// <remarks>
+/// Heavily inspired by the <see href="https://dotnet.github.io/dotNext/features/core/result.html">Result type</see> from .NEXT (dotNext).
+/// </remarks>
 [Serializable]
 public class ProcessResult<T>
 {
-    /// <summary>
-    /// Indicates whether the process completed successfully.
-    /// </summary>
-    public bool IsValid => Errors.IsEmpty && ((int)StatusCode >= 200) && ((int)StatusCode <= 299);
+    private readonly T _value;
+    private readonly ExceptionDispatchInfo? _exception;
 
     /// <summary>
-    /// General status code representing the outcome of the process.
+    /// Initializes a new successful result.
     /// </summary>
-    public StatusCodes StatusCode { get; set; }
+    /// <param name="value">The value to be stored as result.</param>
+    public ProcessResult(T value) => this._value = value;
 
     /// <summary>
-    /// Collection of exceptions that occurred during the process.
+    /// Initializes a new unsuccessful result.
     /// </summary>
-    public ConcurrentBag<Exception> Errors { get; }
+    /// <param name="error">The exception representing error. Cannot be <see langword="null"/>.</param>
+    public ProcessResult(Exception error) : this(ExceptionDispatchInfo.Capture(error)) { }
 
     /// <summary>
-    /// The content or result value produced by the process.
+    /// Extracts the actual result.
     /// </summary>
-    public T Content { get; set; }
-
-    /// <summary>
-    /// Creates a new <see cref="ProcessResult{T}"/> from a content value.
-    /// </summary>
-    /// <param name="content">The content or result value produced by the process.</param>
-    /// <param name="statusCode">The status code representing the outcome of the process.</param>
-    public ProcessResult(T content, StatusCodes statusCode = StatusCodes.OK)
+    /// <exception cref="Exception">This result is not successful.</exception>
+    public T Value
     {
-        Content = content;
-        StatusCode = statusCode;
-        Errors = [];
-    }
-
-    /// <summary>
-    /// Creates a new <see cref="ProcessResult{T}"/> from a collection of exceptions.
-    /// </summary>
-    /// <param name="content">The content or result value produced by the process.</param>
-    /// <param name="exceptions">The exceptions that occurred during the process.</param>
-    /// <param name="statusCode">The status code representing the outcome of the process.</param>
-    public ProcessResult(T content, IEnumerable<Exception> exceptions, StatusCodes statusCode = StatusCodes.OK)
-    {
-        Content = content;
-        StatusCode = statusCode;
-        Errors = [.. exceptions];
-    }
-
-    /// <summary>
-    /// Generates a JSON representation of the <see cref="ProcessResult{T}"/>
-    /// </summary>
-    public override string ToString()
-    {
-        return JsonSerializer.Serialize(new
+        get
         {
-            statusCode = (int)StatusCode,
-            statusPhrase = StatusCode.GetDisplayName(),
-            errorMessages = Errors.Select(e => e.Message).ToArray(),
-            content = Content?.ToString()
-        });
+            Validate();
+            return _value;
+        }
     }
 
     /// <summary>
-    /// Generates a string representation of the error messages, concatenating using the specified separator between each error.
+    /// Gets the value if present; otherwise return default value.
     /// </summary>
-    public string ErrorsSeparated(string separator)
-    {
-        return string.Join(separator, Errors.Select(ex => ex.Message));
-    }
+    /// <value>The value, if present, otherwise <c>default</c>.</value>
+    public T? ValueOrDefault => _value;
 
     /// <summary>
-    /// If there is more than one error, generates a string representation of the error messages separated by new lines and bulleted by the specified character.
-    /// Else, returns the single error message.
+    /// Gets exception associated with this result.
     /// </summary>
-    public string ErrorsBulleted(char bullet)
-    {
-        return Errors.Count == 1
-            ? Errors.First().Message
-            : Environment.NewLine + string.Join(Environment.NewLine, Errors.Select(e => $" {bullet} {e.Message}"));
-    }
+    public Exception? Error => _exception?.SourceException;
 
     /// <summary>
-    /// Creates a <see cref="ProcessResult{T}"/> representing a successful process with the specified content.
+    /// Indicates that the result is successful.
     /// </summary>
-    /// <param name="content">The content or result value produced by the process.</param>
-    /// <returns>A <see cref="ProcessResult{T}"/> instance with the provided content and no errors.</returns>
-    public static ProcessResult<T> Success(T content) => new(content, StatusCodes.OK);
+    /// <value><see langword="true"/> if this result is successful; <see langword="false"/> if this result represents exception.</value>
+    [MemberNotNullWhen(false, nameof(Error))]
+    public bool IsSuccessful => _exception is null;
 
     /// <summary>
-    /// Creates a <see cref="ProcessResult{T}"/> representing a failed process with the specified status code and exceptions.
+    /// Returns a string that represents the current result, indicating success or failure and the associated value or error.
     /// </summary>
-    /// <param name="content">The content or result value produced by the process.</param>
-    /// <param name="statusCode">The <see cref="StatusCodes"/> value representing the outcome of the process.</param>
-    /// <param name="exceptions">One or more exceptions that describe the failure.</param>
+    public override string ToString() => IsSuccessful ? $"Success({_value})" : $"Failure({Error})";
+
+    /// <summary>
+    /// Creates a successful <see cref="ProcessResult{T}"/> containing the specified value.
+    /// </summary>
+    /// <param name="value">The value to store in the successful result.</param>
+    /// <returns>A <see cref="ProcessResult{T}"/> representing a successful operation.</returns>
+    public static ProcessResult<T> Success(T value) => new(value);
+
+    /// <summary>
+    /// Creates a failed <see cref="ProcessResult{T}"/> containing the specified exception.
+    /// </summary>
+    /// <param name="error">The exception representing the failure. Cannot be <see langword="null"/>.</param>
+    /// <returns>A <see cref="ProcessResult{T}"/> representing a failed operation.</returns>
+    public static ProcessResult<T> Failure(Exception error) => new(error);
+
+    /// <summary>
+    /// Defines an implicit conversion from <see cref="ProcessResult{T}"/> to <see cref="bool"/>.
+    /// </summary>
+    /// <param name="result">The result to evaluate.</param>
     /// <returns>
-    /// A <see cref="ProcessResult{T}"/> instance containing the provided exceptions and status code.
+    /// <c>true</c> if the result is successful; otherwise, <c>false</c>.
     /// </returns>
-    public static ProcessResult<T> Failure(T content, StatusCodes statusCode, params Exception[] exceptions) => new(content, exceptions, statusCode);
+    public static implicit operator bool(ProcessResult<T> result) => result.IsSuccessful;
+
+    /// <summary>
+    /// Defines an explicit conversion from <see cref="ProcessResult{T}"/> to the underlying value of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="result">The result to extract the value from.</param>
+    /// <returns>The value contained in the result if it is successful.</returns>
+    /// <exception cref="Exception">
+    /// Thrown if the result is not successful and an attempt is made to extract the value.
+    /// </exception>
+    public static explicit operator T(ProcessResult<T> result) => result.Value;
+
+    [StackTraceHidden]
+    private void Validate() => _exception?.Throw();
+
+    private ProcessResult(ExceptionDispatchInfo dispatchInfo)
+    {
+        Unsafe.SkipInit(out _value);
+        _exception = dispatchInfo;
+    }
 }
+
