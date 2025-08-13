@@ -46,7 +46,7 @@ public class ValidationResult<T>
     {
         Value = value;
         ValidationMessages = validationMessages is not null ? new Dictionary<string, string[]>(validationMessages) : [];
-        GeneralMessages = generalMessages is not null ? new List<string>(generalMessages) : [];
+        GeneralMessages = generalMessages is not null ? [.. generalMessages] : [];
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class ValidationResult<T>
     /// </summary>
     public override string ToString()
     {
-        List<string> lines = [ .. GeneralMessages ];
+        List<string> lines = [.. GeneralMessages];
 
         foreach (KeyValuePair<string, string[]> kvp in ValidationMessages)
         {

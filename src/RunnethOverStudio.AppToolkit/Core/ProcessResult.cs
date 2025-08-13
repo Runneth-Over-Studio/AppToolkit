@@ -109,4 +109,3 @@ public class ProcessResult<T>
         _exception = dispatchInfo;
     }
 }
-
