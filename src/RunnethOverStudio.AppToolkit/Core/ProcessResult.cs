@@ -7,7 +7,7 @@ using System.Runtime.ExceptionServices;
 namespace RunnethOverStudio.AppToolkit.Core;
 
 /// <summary>
-/// Represents a result of operation which can be the actual result or exception.
+/// Represents a result of an operation which can be the actual result or exception.
 /// </summary>
 /// <typeparam name="T">The type of the value stored in the Result.</typeparam>
 /// <remarks>
