@@ -14,10 +14,12 @@ namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 /// Provides methods to ensure the application's database is created and up-to-date.
 /// </summary>
 /// <remarks>
-/// This implementation uses SQLite as the database engine and is designed to be thread-safe.
+/// This implementation uses SQLite as the database engine.
 /// </remarks>
 public class SqliteDatabaseInitializer : IDatabaseInitializer
 {
+    private const string DB_FILE_EXTENSION = ".db";
+
     private static readonly object _initLock = new();
 
     private readonly ILogger _logger;
@@ -40,7 +42,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         ProcessResult<string> appDirectoryResult = _fileSystemAccess.GetAppDirectoryPath();
         if (!appDirectoryResult.IsSuccessful)
         {
-            _logger.LogError("Failed to retrieve path to the application's SQLite database file.");
+            _logger.LogError("Failed to retrieve path to the application's database file.");
             return appDirectoryResult;
         }
 
@@ -48,12 +50,12 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         {
             string appFolderPath = appDirectoryResult.Value;
             string appName = new DirectoryInfo(appFolderPath).Name;
-            string dbPath = Path.Join(appFolderPath, $"{appName}.db"); ;
+            string dbPath = Path.Join(appFolderPath, $"{appName}.{DB_FILE_EXTENSION}"); ;
             return ProcessResult<string>.Success(dbPath);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to retrieve path to the application's SQLite database file.");
+            _logger?.LogError(ex, "Failed to retrieve path to the application's database file.");
             return ProcessResult<string>.Failure(ex);
         }
     }
@@ -66,8 +68,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
             ProcessResult<string> dbPathResult = GetDBPath();
             if (!dbPathResult.IsSuccessful)
             {
-                _logger.LogError("Failed to initialize database.");
-                return ProcessResult<bool>.Failure(new Exception("Failed to initialize database.", innerException: dbPathResult.Error));
+                ProcessResult<bool>.LogAndForwardException("Failed to initialize database.", dbPathResult.Error, _logger);
             }
 
             try
@@ -76,65 +77,57 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
 
                 if (File.Exists(dbPath))
                 {
-                    UpdateExistingSqliteDB(dbPath);
+                    UpdateExistingDB(dbPath);
                 }
                 else
                 {
-                    CreateNewSqliteDB(dbPath);
+                    CreateNewDB(dbPath);
                 }
 
                 return ProcessResult<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to initialize database.");
-                return ProcessResult<bool>.Failure(new Exception("Failed to initialize database.", innerException: ex));
+                return ProcessResult<bool>.LogAndForwardException("Failed to initialize database.", ex, _logger);
             }
         }
     }
 
-    private static void CreateNewSqliteDB(string dbPath)
+    private static void CreateNewDB(string dbPath)
     {
         using SqliteConnection connection = new($"Data Source={dbPath}");
         connection.Open();
 
-        // Create Migration table
-        const string createMigrationTable = @"
-            CREATE TABLE IF NOT EXISTS Migration (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                CreatedAt TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
-                Number INTEGER NOT NULL,
-                Description TEXT NOT NULL;
-            );
-        ";
+        string migrationTableCreationScript = SQLiteMigration.GetMigrationTableCreationScript();
 
-        connection.Execute(createMigrationTable);
+        connection.Execute(migrationTableCreationScript);
 
-        RunMigrations(connection, 1);
+        RunMigrations(connection, 0);
     }
 
-    private static void UpdateExistingSqliteDB(string dbPath)
+    private static void UpdateExistingDB(string dbPath)
     {
         using SqliteConnection connection = new($"Data Source={dbPath}");
         connection.Open();
 
         const string sql = "SELECT MAX(Number) FROM Migration;";
-        uint lastMigrationNumber = connection.ExecuteScalar<uint>(sql);
+        uint? lastMigrationNumber = connection.ExecuteScalar<uint>(sql);
 
-        RunMigrations(connection, ++lastMigrationNumber);
+        RunMigrations(connection, (lastMigrationNumber ?? 0) + 1);
     }
 
     private static void RunMigrations(DbConnection connection, uint startingNumber)
     {
-        SortedList<uint, BaseSQLiteMigration> migrations = [];
+        SortedList<uint, IMigration> migrations = [];
 
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
             foreach (Type assemblyType in assembly.GetTypes())
             {
                 if (!assemblyType.IsAbstract
-                    && typeof(BaseSQLiteMigration).IsAssignableFrom(assemblyType)
-                    && Activator.CreateInstance(assemblyType) is BaseSQLiteMigration migration)
+                    && !assemblyType.IsInterface
+                    && typeof(IMigration).IsAssignableFrom(assemblyType)
+                    && Activator.CreateInstance(assemblyType) is IMigration migration)
                 {
                     if (migration.Number >= startingNumber)
                     {
@@ -144,7 +137,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
             }
         }
 
-        foreach (BaseSQLiteMigration migration in migrations.Values)
+        foreach (IMigration migration in migrations.Values)
         {
             migration.Run(connection);
         }

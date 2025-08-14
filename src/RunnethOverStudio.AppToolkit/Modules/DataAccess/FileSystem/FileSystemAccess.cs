@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using RunnethOverStudio.AppToolkit.Core;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
@@ -36,8 +38,7 @@ public sealed class FileSystemAccess : IFileSystemAccess
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to get or create application directory.");
-            return ProcessResult<string>.Failure(new Exception("Failed to get or create application directory.", innerException: ex));
+            return ProcessResult<string>.LogAndForwardException("Failed to get or create application directory.", ex, _logger);
         }
     }
 
@@ -61,15 +62,77 @@ public sealed class FileSystemAccess : IFileSystemAccess
             }
             else
             {
-                FileNotFoundException ex = new("Attempted to delete a file that does not exist.", fullFilePath);
-                _logger?.LogWarning(ex, "Nothing to delete.");
-                return ProcessResult<bool>.Failure(ex);
+                return ProcessResult<bool>.LogAndForwardException(
+                    "Nothing to delete.",
+                    new FileNotFoundException("Attempted to delete a file that does not exist.", fullFilePath),
+                    _logger,
+                    LogLevel.Warning);
             }
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to delete file: {FilePath}", fullFilePath);
-            return ProcessResult<bool>.Failure(new Exception($"Failed to delete file: {fullFilePath}", innerException: ex));
+            return ProcessResult<bool>.LogAndForwardException($"Failed to delete file: {fullFilePath}", ex, _logger);
+        }
+    }
+
+    /// <inheritdoc/>
+    public ProcessResult<bool> WriteFile(IEnumerable<string> contentLines, string fileName, string directoryPath = null)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+            else
+            {
+                ProcessResult<string> appDirectoryResult = GetAppDirectoryPath();
+                if (!appDirectoryResult.IsSuccessful)
+                {
+                    return ProcessResult<bool>.LogAndForwardException("Failed to retrieve default directory path.", appDirectoryResult.Error, _logger);
+                }
+
+                directoryPath = appDirectoryResult.Value;
+            }
+
+            string fullPath = Path.Combine(directoryPath, fileName);
+
+            using StreamWriter outputFile = new(fullPath);
+            foreach (string line in contentLines)
+            {
+                outputFile.WriteLine(line);
+            }
+
+            return ProcessResult<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return ProcessResult<bool>.LogAndForwardException("Failed to write file.", ex, _logger);
+        }
+    }
+
+    /// <inheritdoc/>
+    public ProcessResult<string> GetEmbeddedResourceText(Assembly assemblyEmbeddedIn, string filePath)
+    {
+        try
+        {
+            using Stream? stream = assemblyEmbeddedIn.GetManifestResourceStream(filePath);
+
+            if (stream is null)
+            {
+                return ProcessResult<string>.LogAndForwardException(
+                    $"Embedded resource '{filePath}' not found in assembly '{assemblyEmbeddedIn.FullName}'.",
+                    new FileNotFoundException($"The specified embedded resource '{filePath}' could not be found."),
+                    _logger);
+            }
+
+            using StreamReader streamReader = new(stream);
+
+            return ProcessResult<string>.Success(streamReader.ReadToEnd());
+        }
+        catch (Exception ex)
+        {
+            return ProcessResult<string>.LogAndForwardException("Failed to retrieve embedded text.", ex, _logger);
         }
     }
 }

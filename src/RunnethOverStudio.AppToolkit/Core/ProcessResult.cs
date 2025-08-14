@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -80,6 +81,24 @@ public class ProcessResult<T>
     /// <param name="error">The exception representing the failure. Cannot be <see langword="null"/>.</param>
     /// <returns>A <see cref="ProcessResult{T}"/> representing a failed operation.</returns>
     public static ProcessResult<T> Failure(Exception error) => new(error);
+
+    /// <summary>
+    /// Logs a failure message and exception using the specified logger and log level, then returns a failed <see cref="ProcessResult{T}"/>
+    /// containing a new exception with the provided message and the original exception as its inner exception.
+    /// </summary>
+    /// <param name="message">The message to log and to use as the new exception's message.</param>
+    /// <param name="error">The original exception to be wrapped and logged.</param>
+    /// <param name="logLevel">The severity level at which to log the message.</param>
+    /// <param name="logger">The logger to use for logging the failure.</param>
+    /// <returns>
+    /// A failed <see cref="ProcessResult{T}"/> containing a new exception with the specified message and the original exception as its inner exception.
+    /// </returns>
+    public static ProcessResult<T> LogAndForwardException(string message, Exception error, ILogger logger, LogLevel logLevel = LogLevel.Error)
+    {
+        logger.Log(logLevel, message);
+
+        return Failure(new Exception(message, innerException: error));
+    }
 
     /// <summary>
     /// Defines an implicit conversion from <see cref="ProcessResult{T}"/> to <see cref="bool"/>.

@@ -11,7 +11,7 @@ public interface IDatabaseInitializer
     /// Gets the absolute path to the application's database file, constructed from the application's directory and name.
     /// </summary>
     /// <returns>
-    /// A <see cref="ProcessResult{T}"/> whose <c>Content</c> property contains the full path to the application's database file.
+    /// A <see cref="ProcessResult{T}"/> whose <c>Value</c> property contains the full path to the application's database file.
     /// </returns>
     ProcessResult<string> GetDBPath();
 
@@ -20,7 +20,7 @@ public interface IDatabaseInitializer
     /// and applying any pending migrations.
     /// </summary>
     /// <returns>
-    /// A <see cref="ProcessResult{T}"/> whose <c>Content</c> property is <c>true</c> if the database was initialized; otherwise, <c>false</c>.
+    /// A <see cref="ProcessResult{T}"/> whose <c>Value</c> property is <c>true</c> if the database was initialized; otherwise, <c>false</c>.
     /// </returns>
     /// <remarks>
     /// This method should be called during application initialization before configuring DB access services.
