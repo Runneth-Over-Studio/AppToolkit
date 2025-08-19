@@ -3,6 +3,7 @@ using RunnethOverStudio.AppToolkit.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 
 namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
@@ -76,7 +77,7 @@ public sealed class FileSystemAccess : IFileSystemAccess
     }
 
     /// <inheritdoc/>
-    public ProcessResult<bool> WriteFile(IEnumerable<string> contentLines, string fileName, string directoryPath = null)
+    public ProcessResult<bool> WriteFile(IEnumerable<string> contentLines, string fileName, string? directoryPath = null)
     {
         try
         {
@@ -108,6 +109,76 @@ public sealed class FileSystemAccess : IFileSystemAccess
         catch (Exception ex)
         {
             return ProcessResult<bool>.LogAndForwardException("Failed to write file.", ex, _logger);
+        }
+    }
+
+    /// <inheritdoc/>
+    public ProcessResult<bool> CompressFolder(string directoryPathToCompress, bool deleteOriginalAfterZip = false)
+    {
+        try
+        {
+            if (!Directory.Exists(directoryPathToCompress))
+            {
+                throw new DirectoryNotFoundException($"Directory '{directoryPathToCompress}' does not exist.");
+            }
+
+            string zipPath = Path.Combine(Path.GetDirectoryName(directoryPathToCompress)!, Path.GetFileName(directoryPathToCompress) + ".zip");
+            string tempZipPath = zipPath + ".tmp";
+            ZipFile.CreateFromDirectory(directoryPathToCompress, tempZipPath);
+            File.Move(tempZipPath, zipPath, overwrite: true);
+
+            if (deleteOriginalAfterZip)
+            {
+                Directory.Delete(directoryPathToCompress, recursive: true);
+            }
+
+            return ProcessResult<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return ProcessResult<bool>.LogAndForwardException($"Failed to compress directory '{directoryPathToCompress}'.", ex, _logger);
+        }
+    }
+
+    /// <inheritdoc/>
+    public ProcessResult<bool> RenameFolder(string directoryPath, string oldName, string newName)
+    {
+        string fullPathToOld = Path.Combine(directoryPath, oldName);
+
+        if (!Directory.Exists(fullPathToOld))
+        {
+            return ProcessResult<bool>.LogAndForwardException(
+                $"Cannot rename folder '{oldName}' to '{newName}' because the source folder does not exist.",
+                new DirectoryNotFoundException($"The directory '{fullPathToOld}' does not exist."),
+                _logger);
+        }
+
+        if (string.Equals(oldName, newName, StringComparison.Ordinal))
+        {
+            return ProcessResult<bool>.Success(true);
+        }
+
+        try
+        {
+            string fullPathToNew = Path.Combine(directoryPath, newName);
+
+            // Always use a temp name to force the rename, even if only case is changing.
+            string tempDir = Path.Combine(directoryPath, Guid.NewGuid().ToString("N"));
+            Directory.Move(fullPathToOld, tempDir);
+
+            // If a folder with the target name exists, delete it first.
+            if (Directory.Exists(fullPathToNew))
+            {
+                Directory.Delete(fullPathToNew, recursive: true);
+            }
+
+            Directory.Move(tempDir, fullPathToNew);
+
+            return ProcessResult<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return ProcessResult<bool>.LogAndForwardException($"Failed to rename folder '{oldName}' to '{newName}'.", ex, _logger);
         }
     }
 
