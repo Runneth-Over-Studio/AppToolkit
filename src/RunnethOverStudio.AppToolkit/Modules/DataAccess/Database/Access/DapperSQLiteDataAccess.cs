@@ -52,7 +52,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
     }
 
     /// <inheritdoc/>
-    public async Task<long?> CreateAsync<T>(T entity, CancellationToken cancellationToken = default)
+    public async Task<uint?> CreateAsync<T>(T entity, CancellationToken cancellationToken = default) where T : IDataEntity
     {
         try
         {
@@ -68,7 +68,9 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
             await using SqliteConnection conn = CreateConnection();
             await conn.OpenAsync(cancellationToken);
 
-            return await conn.ExecuteScalarAsync<long?>(sql, entity);
+            entity.Id = await conn.ExecuteScalarAsync<uint?>(sql, entity);
+
+            return entity.Id;
         }
         catch (Exception ex)
         {
@@ -95,7 +97,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<T>> ReadAsync<T>(string? whereClause = null, object? parameters = null, CancellationToken cancellationToken = default, params string[]? columns)
+    public async Task<IEnumerable<T>> ReadAsync<T>(string? whereClause = null, object? parameters = null, CancellationToken cancellationToken = default, params string[]? columns) where T : IDataEntity
     {
         try
         {
@@ -119,7 +121,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
     }
 
     /// <inheritdoc/>
-    public async Task<T?> ReadByPrimaryKeyAsync<T>(long key, CancellationToken cancellationToken = default, params string[]? columns)
+    public async Task<T?> ReadByPrimaryKeyAsync<T>(uint key, CancellationToken cancellationToken = default, params string[]? columns) where T : IDataEntity
     {
         try
         {
@@ -141,7 +143,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateByPrimaryKeyAsync<T>(long key, IDictionary<string, object?> columnValues, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateByPrimaryKeyAsync<T>(uint key, IDictionary<string, object?> columnValues, CancellationToken cancellationToken = default) where T : IDataEntity
     {
         try
         {
@@ -176,7 +178,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
     }
 
     /// <inheritdoc/>
-    public async Task<bool> DeleteByPrimaryKeyAsync<T>(long key, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteByPrimaryKeyAsync<T>(uint key, CancellationToken cancellationToken = default) where T : IDataEntity
     {
         try
         {
@@ -197,5 +199,8 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
         }
     }
 
-    private SqliteConnection CreateConnection() => new($"Data Source={_dbPath}");
+    /// <summary>
+    /// Creates and returns a new <see cref="SqliteConnection"/> instance configured for the application's SQLite database.
+    /// </summary>
+    protected SqliteConnection CreateConnection() => new($"Data Source={_dbPath}");
 }
