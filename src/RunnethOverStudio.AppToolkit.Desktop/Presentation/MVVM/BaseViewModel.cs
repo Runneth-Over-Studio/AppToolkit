@@ -21,6 +21,15 @@ public partial class BaseViewModel : ObservableValidator
     private bool? _longRunningProcessSuccessful = null;
 
     /// <summary>
+    /// As to not block on async code in a constructor, initialize data asynchronously after construction. 
+    /// This avoids deadlocks and keeps UI responsive.
+    /// </summary>
+    /// <remarks>
+    /// Call this method after constructing the ViewModel, such as from the View's OnLoaded event.
+    /// </remarks>
+    public virtual async Task InitializeAsync() { await Task.Yield(); }
+
+    /// <summary>
     /// Adds event handlers for the underlying model. Override in derived classes to attach model events.
     /// </summary>
     public virtual void AddModelEvents() { }
