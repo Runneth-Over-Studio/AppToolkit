@@ -25,7 +25,7 @@ public class ViewLocator : IDataTemplate
         }
 
         string name = data.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
-        Type? type = Type.GetType(name);
+        Type? type = data.GetType().Assembly.GetType(name);
 
         if (type != null)
         {
