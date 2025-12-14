@@ -5,7 +5,6 @@
 	<ImplicitUsings>disable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Optimize>true</Optimize>
 	<Product>App Toolkit - CLI</Product>
 	<Authors>Runneth Over Studio, LLC</Authors>
 	<Company>Runneth Over Studio, LLC</Company>
@@ -16,13 +15,20 @@
 	<PackageIcon>package-icon.png</PackageIcon>
 	<PackageProjectUrl>https://github.com/Runneth-Over-Studio/AppToolkit</PackageProjectUrl>
 	<RepositoryUrl>https://github.com/Runneth-Over-Studio/AppToolkit</RepositoryUrl>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	<RepositoryType>git</RepositoryType>
 	<Description>Common application development code, explicitly extended for CLI (Spectre) apps.</Description>
 	<PackageTags>app helpers cli spectre</PackageTags>
 	<IncludeSymbols>true</IncludeSymbols>
+	<EmbedUntrackedSources>true</EmbedUntrackedSources>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Version>0.5.3</Version>
+	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
+	<Version>0.5.6</Version>
 	<PackageReleaseNotes>In-development / pre-alpha.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <!-- Include files that are required by the project's resulting NuGet package. -->

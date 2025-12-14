@@ -1,9 +1,11 @@
 ﻿using Cake.Common.IO;
 using Cake.Common.IO.Paths;
 using Cake.Common.Tools.DotNet;
+using Cake.Common.Tools.DotNet.MSBuild;
 using Cake.Common.Tools.DotNet.Pack;
 using Cake.Core.IO;
 using Cake.Frosting;
+
 using static Build.BuildContext;
 
 namespace Build.Tasks;
@@ -36,7 +38,8 @@ public sealed class PackageTask : FrostingTask<BuildContext>
             Configuration = context.Config.ToString(),
             NoRestore = true,
             NoBuild = true,
-            OutputDirectory = nugetOutputDirectoryPath
+            OutputDirectory = nugetOutputDirectoryPath,
+            MSBuildSettings = new DotNetMSBuildSettings().WithProperty("ContinuousIntegrationBuild", "true")
         });
     }
 }
