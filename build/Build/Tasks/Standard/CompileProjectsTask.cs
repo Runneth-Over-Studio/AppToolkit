@@ -7,10 +7,10 @@ using Cake.Frosting;
 
 namespace Build.Tasks.Standard;
 
-[TaskName("Compile Source Template Projects")]
+[TaskName("Compile")]
 [IsDependentOn(typeof(LintingTask))]
 [IsDependentOn(typeof(ProcessImagesTask))]
-[TaskDescription("Compiles all template projects.")]
+[TaskDescription("Compiles all release projects.")]
 public sealed class CompileProjectsTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext context)

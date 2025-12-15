@@ -8,14 +8,14 @@ using System;
 
 namespace Build.Tasks.Standard;
 
-[TaskName("Restore Source Template Projects")]
+[TaskName("Restore")]
 [IsDependentOn(typeof(CleanTask))]
-[TaskDescription("Restores the NuGet packages for the template projects and checks for known vulnerabilities in dependencies.")]
+[TaskDescription("Restores the NuGet packages for the projects and checks for known vulnerabilities in dependencies.")]
 public sealed class RestoreTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext context)
     {
-        context.Log.Information("Restoring NuGet packages for the template projects...");
+        context.Log.Information("Restoring NuGet packages for the release projects...");
 
         foreach (ReleaseProject project in context.ReleaseProjects)
         {

@@ -1,6 +1,7 @@
 ﻿using Build.DTOs;
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Publish;
+using Cake.Common.Tools.MSBuild;
 using Cake.Frosting;
 using static Build.BuildContext;
 
@@ -20,15 +21,26 @@ public sealed class PublishTask : FrostingTask<BuildContext>
     {
         foreach (ReleaseProject project in context.ReleaseProjects)
         {
-            PublishProject(context, project.CsprojFilePathAbsolute);
+            PublishProject(context, project);
         }
     }
 
-    private static void PublishProject(BuildContext context, string projectPath)
+    private static void PublishProject(BuildContext context, ReleaseProject project)
     {
-        context.DotNetPublish(projectPath, new DotNetPublishSettings
+        if (project.IsSdkStyleProject)
         {
-            Configuration = context.Config.ToString()
-        });
+            context.DotNetPublish(project.CsprojFilePathAbsolute, new DotNetPublishSettings
+            {
+                Configuration = context.Config.ToString()
+            });
+        }
+        else
+        {
+            context.MSBuild(project.CsprojFilePathAbsolute, new MSBuildSettings
+            {
+                Target = "Publish",
+                Configuration = context.Config.ToString()
+            });
+        }
     }
 }
