@@ -2,10 +2,10 @@
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
 
-namespace Build.Tasks;
+namespace Build.Tasks.Standard;
 
 [TaskName("Default")]
-[IsDependentOn(typeof(PackageTask))]
+[IsDependentOn(typeof(PackageTask))] // The default task depends on the final build task and task execution order is scafolded from there. AppToolkit build libraries for NuGet, so packaging is the final step.
 [TaskDescription("Entry point for the build process when a command-line target isn't specified.")]
 public sealed class DefaultTask : FrostingTask
 {

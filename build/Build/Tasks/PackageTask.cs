@@ -1,11 +1,11 @@
-﻿using Cake.Common.IO;
-using Cake.Common.IO.Paths;
+﻿using Build.DTOs;
+using Build.Tasks.Standard;
+using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.MSBuild;
 using Cake.Common.Tools.DotNet.Pack;
 using Cake.Core.IO;
 using Cake.Frosting;
-
 using static Build.BuildContext;
 
 namespace Build.Tasks;
@@ -24,13 +24,12 @@ public sealed class PackageTask : FrostingTask<BuildContext>
     {
         foreach (ReleaseProject project in context.ReleaseProjects)
         {
-            PackageProject(context, project.Name, project.Directory, project.OutputDirectory);
+            PackageProject(context, project.CsprojFilePathAbsolute, project.OutputDirectoryPathAbsolute);
         }
     }
 
-    private static void PackageProject(BuildContext context, string projectName, ConvertableDirectoryPath projectDirectory, ConvertableDirectoryPath outputDirectory)
+    private static void PackageProject(BuildContext context, string projectPath, string outputDirectory)
     {
-        string projectPath = projectDirectory + context.File($"{projectName}.csproj");
         DirectoryPath nugetOutputDirectoryPath = outputDirectory + context.Directory("NuGet");
 
         context.DotNetPack(projectPath, new DotNetPackSettings

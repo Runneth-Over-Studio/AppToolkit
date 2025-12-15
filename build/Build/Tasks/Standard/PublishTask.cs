@@ -1,9 +1,10 @@
-﻿using Cake.Common.Tools.DotNet;
+﻿using Build.DTOs;
+using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Publish;
 using Cake.Frosting;
 using static Build.BuildContext;
 
-namespace Build.Tasks;
+namespace Build.Tasks.Standard;
 
 [TaskName("Publish")]
 [IsDependentOn(typeof(CompileProjectsTask))]
@@ -19,7 +20,7 @@ public sealed class PublishTask : FrostingTask<BuildContext>
     {
         foreach (ReleaseProject project in context.ReleaseProjects)
         {
-            PublishProject(context, project.FilePath);
+            PublishProject(context, project.CsprojFilePathAbsolute);
         }
     }
 

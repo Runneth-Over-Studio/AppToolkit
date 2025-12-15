@@ -4,7 +4,7 @@ using Cake.Frosting;
 using System;
 using System.Diagnostics;
 
-namespace Build.Tasks;
+namespace Build.Tasks.Standard;
 
 [TaskName("Linting")]
 [IsDependentOn(typeof(RestoreTask))]
@@ -15,19 +15,20 @@ public sealed class LintingTask : FrostingTask<BuildContext>
     //      https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
     //      https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-files#editorconfig
 
-    private const string SOLUTION_NAME = "AppToolkit.sln";
-
     public override void Run(BuildContext context)
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        context.Log.Information($"Formatting solution...");
+        context.Log.Information($"Formatting code...");
 
-        string solutionPath = System.IO.Path.Combine(context.SourceDirectory, SOLUTION_NAME);
+        string[] solutionPaths = System.IO.Directory.GetFiles(context.SourceDirectory, "*.sln", System.IO.SearchOption.AllDirectories);
 
-        foreach (ReleaseProject project in context.ReleaseProjects)
+        foreach (string solutionPath in solutionPaths)
         {
-            context.StartProcess("dotnet", $"format \"{solutionPath}\" --no-restore --report \"{project.OutputDirectory.Path.FullPath}\"");
+            // Non-SDK-style projects will be skipped with a warning, but the process will continue for the rest.
+            // If we ever want to ensure Non-SDK-style projects are formatted, consider using legacy tools.
+            context.Log.Information($"Formatting solution: {System.IO.Path.GetFileName(solutionPath)}");
+            context.StartProcess("dotnet", $"format \"{solutionPath}\" --no-restore");
         }
 
         stopwatch.Stop();
