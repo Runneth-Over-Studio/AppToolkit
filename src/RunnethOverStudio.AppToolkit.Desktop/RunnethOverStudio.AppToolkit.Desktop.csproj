@@ -21,7 +21,7 @@
 	<IncludeSymbols>true</IncludeSymbols>
 	<EmbedUntrackedSources>true</EmbedUntrackedSources>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Version>0.5.6</Version>
+	<Version>0.5.7</Version>
 	<PackageReleaseNotes>In-development / pre-alpha.</PackageReleaseNotes>
   </PropertyGroup>
 
@@ -36,7 +36,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.10" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
   </ItemGroup>

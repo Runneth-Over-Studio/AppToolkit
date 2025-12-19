@@ -21,7 +21,7 @@
 	<IncludeSymbols>true</IncludeSymbols>
 	<EmbedUntrackedSources>true</EmbedUntrackedSources>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Version>0.5.6</Version>
+	<Version>0.5.7</Version>
 	<PackageReleaseNotes>In-development / pre-alpha.</PackageReleaseNotes>
   </PropertyGroup>
 
