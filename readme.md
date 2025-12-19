@@ -18,7 +18,7 @@ Each library is published to [NuGet](https://www.nuget.org/profiles/Runneth-Over
 	- Components and patterns specifically for [Avalonia](https://github.com/AvaloniaUI/Avalonia) desktop applications.
 
 ## Versioning
-App Toolkit uses [Semantic Versioning](https://semver.org/).
+This project uses [Semantic Versioning](https://semver.org/).
 
 - **MAJOR** version: Incompatible API changes
 - **MINOR** version: Backward-compatible functionality
