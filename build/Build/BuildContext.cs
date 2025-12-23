@@ -46,9 +46,7 @@ public sealed class BuildContext : FrostingContext
 
         ReleaseProjects =
         [
-            SetReleaseProject(this, targetFramework, "RunnethOverStudio.AppToolkit"),
-            SetReleaseProject(this, targetFramework, "RunnethOverStudio.AppToolkit.CLI"),
-            SetReleaseProject(this, targetFramework, "RunnethOverStudio.AppToolkit.Desktop")
+            SetReleaseProject(this, targetFramework, "RunnethOverStudio.AppToolkit")
         ];
     }
 
