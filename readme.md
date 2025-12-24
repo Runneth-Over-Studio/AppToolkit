@@ -8,14 +8,8 @@ Runneth Over Studio's common C# app development code.
 ## Purpose
 This library is designed to accelerate the development of prototypes, in-house utilities, and narrowly focused applications. It is not intended for use in large-scale, robust enterprise systems. The primary goal is to enable rapid domain-specific feature development by providing reusable components and eliminating the need to maintain boilerplate code across multiple projects. By leveraging this library, developers can focus on delivering core functionality without being burdened by repetitive infrastructure concerns.
 
-## Projects
-Each library is published to [NuGet](https://www.nuget.org/profiles/Runneth-Over-Studio) as its own package.
-- RunnethOverStudio.AppToolkit
-	- Core utilities, abstractions, and extension methods designed to be useful across all application types.
-- RunnethOverStudio.AppToolkit.CLI
-	- Base classes and helpers tailored for building terminal applications, specifically with [Spectre.Console](https://github.com/spectreconsole/spectre.console) integration.
-- RunnethOverStudio.AppToolkit.Desktop
-	- Components and patterns specifically for [Avalonia](https://github.com/AvaloniaUI/Avalonia) desktop applications.
+## Use
+The project is published to [NuGet](https://www.nuget.org/packages/RunnethOverStudio.AppToolkit).
 
 ## Versioning
 This project uses [Semantic Versioning](https://semver.org/).
