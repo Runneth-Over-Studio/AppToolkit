@@ -14,7 +14,7 @@ namespace Build;
 public sealed class BuildContext : FrostingContext
 {
     internal const string REPO_NAME = "AppToolkit";
-    internal const string LOGO_SVG_FILENAME = "apptoolkit-logo.svg";
+    internal const string LOGO_SVG_FILENAME = "logo.svg";
 
     public enum BuildConfigurations
     {

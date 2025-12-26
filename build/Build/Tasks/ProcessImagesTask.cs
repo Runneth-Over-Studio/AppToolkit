@@ -42,6 +42,7 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         await Task.WhenAll(
             ConvertPngToIcoAsync(pngPath, Path.Combine(contentDir, "favicon.ico")),
             ConvertPngToIcoAsync(pngPath, Path.Combine(contentDir, "extension-icon.ico"), 64),
+            ResizePngAsync(pngPath, Path.Combine(contentDir, "icon-175.png"), 175, 175),
             ResizePngAsync(pngPath, Path.Combine(contentDir, "extension-icon.png"), 90, 90),
             ResizePngAsync(pngPath, Path.Combine(contentDir, "package-icon.png"), 128, 128)
         );
