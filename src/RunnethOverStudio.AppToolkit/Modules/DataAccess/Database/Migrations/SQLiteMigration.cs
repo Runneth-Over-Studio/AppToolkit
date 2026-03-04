@@ -83,9 +83,9 @@ public abstract class SQLiteMigration : IMigration
         return @"
             CREATE TABLE IF NOT EXISTS Migration (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                CreatedAt TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+                CreatedAt TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
                 Number INTEGER NOT NULL,
-                Description TEXT NOT NULL;
+                Description TEXT NOT NULL
             );
         ";
     }
