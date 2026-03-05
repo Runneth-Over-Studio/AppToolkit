@@ -67,7 +67,6 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
                 .Where(p =>
                     !p.Name.Equals(nameof(IDataEntity.Id), StringComparison.OrdinalIgnoreCase) &&
                     !p.Name.Equals(nameof(IDataEntity.CreatedAt), StringComparison.OrdinalIgnoreCase) &&
-                    !p.Name.Equals($"{tableName}Id", StringComparison.OrdinalIgnoreCase) &&
                     IsSimpleType(p.PropertyType))];
 
             string columns = string.Join(", ", properties.Select(p => p.Name));
