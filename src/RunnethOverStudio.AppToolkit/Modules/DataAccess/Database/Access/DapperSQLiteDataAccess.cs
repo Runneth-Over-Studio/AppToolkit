@@ -135,7 +135,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
         try
         {
             string tableName = typeof(T).Name;
-            string idColumn = $"{tableName}Id";
+            string idColumn = nameof(IDataEntity.Id);
             string selectColumns = columns != null && columns.Length > 0 ? string.Join(", ", columns) : "*";
             string sql = $"SELECT {selectColumns} FROM {tableName} WHERE {idColumn} = @id LIMIT 1;";
 
@@ -162,7 +162,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
             }
 
             string tableName = typeof(T).Name;
-            string idColumn = $"{tableName}Id";
+            string idColumn = nameof(IDataEntity.Id);
             string setClause = string.Join(", ", columnValues.Keys.Select(col => $"{col} = @{col}"));
             string sql = $"UPDATE {tableName} SET {setClause} WHERE {idColumn} = @id;";
 
@@ -192,7 +192,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
         try
         {
             string tableName = typeof(T).Name;
-            string idColumn = $"{tableName}Id";
+            string idColumn = nameof(IDataEntity.Id);
             string sql = $"DELETE FROM {tableName} WHERE {idColumn} = @id;";
 
             await using SqliteConnection conn = CreateConnection();
