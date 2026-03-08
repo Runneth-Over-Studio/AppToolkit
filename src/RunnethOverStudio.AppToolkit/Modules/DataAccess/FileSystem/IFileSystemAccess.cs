@@ -16,7 +16,7 @@ public interface IFileSystemAccess
     /// <returns>
     /// A <see cref="ProcessResult{T}"/> whose <c>Value</c> property contains the full path to the application's local data directory.
     /// </returns>
-    ProcessResult<string> GetAppDirectoryPath();
+    ProcessResult<string> GetOrCreateAppDirectoryPath();
 
     /// <summary>
     /// Deletes the specified file if it exists, handling read-only files and logging warnings or errors as appropriate.

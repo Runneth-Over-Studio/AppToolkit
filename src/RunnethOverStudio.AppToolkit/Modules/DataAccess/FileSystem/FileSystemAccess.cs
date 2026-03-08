@@ -25,13 +25,11 @@ public sealed class FileSystemAccess : IFileSystemAccess
     }
 
     /// <inheritdoc/>
-    public ProcessResult<string> GetAppDirectoryPath()
+    public ProcessResult<string> GetOrCreateAppDirectoryPath()
     {
         try
         {
-            string localAppDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string thisAppName = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
-            string appDirectory = Path.Combine(localAppDirectory, thisAppName);
+            string appDirectory = GetAppDirectoryPath();
 
             Directory.CreateDirectory(appDirectory);
 
@@ -87,7 +85,7 @@ public sealed class FileSystemAccess : IFileSystemAccess
             }
             else
             {
-                ProcessResult<string> appDirectoryResult = GetAppDirectoryPath();
+                ProcessResult<string> appDirectoryResult = GetOrCreateAppDirectoryPath();
                 if (!appDirectoryResult.IsSuccessful)
                 {
                     return ProcessResult<bool>.LogAndForwardException("Failed to retrieve default directory path.", appDirectoryResult.Error, _logger);
@@ -205,5 +203,20 @@ public sealed class FileSystemAccess : IFileSystemAccess
         {
             return ProcessResult<string>.LogAndForwardException("Failed to retrieve embedded text.", ex, _logger);
         }
+    }
+
+    /// <summary>
+    /// Gets the full path to the application's directory within the local application data folder.
+    /// </summary>
+    /// <returns>The full path to the application's directory.</returns>
+    /// <remarks>
+    /// This method does not create the directory. Use <see cref="GetOrCreateAppDirectoryPath"/> to ensure the directory exists.
+    /// </remarks>
+    public static string GetAppDirectoryPath()
+    {
+        string localAppDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string thisAppName = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
+
+        return Path.Combine(localAppDirectory, thisAppName);
     }
 }

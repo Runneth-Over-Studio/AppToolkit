@@ -39,7 +39,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
     /// <inheritdoc/>
     public ProcessResult<string> GetDBPath()
     {
-        ProcessResult<string> appDirectoryResult = _fileSystemAccess.GetAppDirectoryPath();
+        ProcessResult<string> appDirectoryResult = _fileSystemAccess.GetOrCreateAppDirectoryPath();
         if (!appDirectoryResult.IsSuccessful)
         {
             _logger.LogError("Failed to retrieve path to the application's database file.");
