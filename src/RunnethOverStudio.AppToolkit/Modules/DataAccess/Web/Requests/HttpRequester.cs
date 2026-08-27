@@ -24,7 +24,7 @@ public sealed class HttpRequester : IHttpRequester
     public const string COMPRESSION_CLIENT_NAME = "CompressionClient";
 
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger _logger;
+    private readonly ILogger<IHttpRequester> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HttpRequester"/> class.

@@ -22,7 +22,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
 
     private static readonly object _initLock = new();
 
-    private readonly ILogger _logger;
+    private readonly ILogger<IDatabaseInitializer> _logger;
     private readonly IFileSystemAccess _fileSystemAccess;
 
     /// <summary>
@@ -55,7 +55,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to retrieve path to the application's database file.");
+            _logger.LogError(ex, "Failed to retrieve path to the application's database file.");
             return ProcessResult<string>.Failure(ex);
         }
     }

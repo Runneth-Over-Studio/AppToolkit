@@ -13,7 +13,7 @@ namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 /// </summary>
 public sealed class FileSystemAccess : IFileSystemAccess
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<IFileSystemAccess> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileSystemAccess"/> class with the specified logger.
@@ -53,7 +53,7 @@ public sealed class FileSystemAccess : IFileSystemAccess
                 {
                     // Remove read-only attribute before deleting.
                     File.SetAttributes(fullFilePath, attributes & ~FileAttributes.ReadOnly);
-                    _logger?.LogInformation("Removed read-only attribute from file: {FilePath}", fullFilePath);
+                    _logger.LogInformation("Removed read-only attribute from file: {FilePath}", fullFilePath);
                 }
 
                 File.Delete(fullFilePath);

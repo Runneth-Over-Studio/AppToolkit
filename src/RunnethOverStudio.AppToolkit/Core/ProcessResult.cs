@@ -83,8 +83,9 @@ public class ProcessResult<T>
     public static ProcessResult<T> Failure(Exception error) => new(error);
 
     /// <summary>
-    /// Logs a failure message and exception using the specified logger and log level, then returns a failed <see cref="ProcessResult{T}"/>
-    /// containing a new exception with the provided message and the original exception as its inner exception.
+    /// Logs a failure message and exception using the specified logger and log level, so long as logging is enabled.
+    /// Then returns a failed <see cref="ProcessResult{T}"/> containing a new exception with the provided message and 
+    /// the original exception as its inner exception.
     /// </summary>
     /// <param name="message">The message to log and to use as the new exception's message.</param>
     /// <param name="error">The original exception to be wrapped and logged.</param>
@@ -95,7 +96,10 @@ public class ProcessResult<T>
     /// </returns>
     public static ProcessResult<T> LogAndForwardException(string message, Exception error, ILogger logger, LogLevel logLevel = LogLevel.Error)
     {
-        logger.Log(logLevel, message);
+        if (logger.IsEnabled(logLevel))
+        {
+            logger.Log(logLevel, error, "{Message}", message);
+        }
 
         return Failure(new Exception(message, innerException: error));
     }

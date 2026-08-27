@@ -21,7 +21,7 @@ public class DapperSQLiteDataAccess : ISQLDataAccess
 {
     //Note: At the time of writing, Dapper query execution methods do not support cancellation.
 
-    private readonly ILogger _logger;
+    private readonly ILogger<ISQLDataAccess> _logger;
     private readonly string _dbPath;
 
     /// <summary>
