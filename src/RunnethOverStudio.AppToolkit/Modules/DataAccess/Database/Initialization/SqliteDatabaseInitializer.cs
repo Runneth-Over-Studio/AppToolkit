@@ -50,7 +50,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
         {
             string appFolderPath = appDirectoryResult.Value;
             string appName = new DirectoryInfo(appFolderPath).Name;
-            string dbPath = Path.Join(appFolderPath, $"{appName}.{DB_FILE_EXTENSION}"); ;
+            string dbPath = Path.Join(appFolderPath, $"{appName}{DB_FILE_EXTENSION}"); ;
             return ProcessResult<string>.Success(dbPath);
         }
         catch (Exception ex)
