@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
 
@@ -20,7 +21,7 @@ public class SqliteDatabaseInitializer : IDatabaseInitializer
 {
     private const string DB_FILE_EXTENSION = ".db";
 
-    private static readonly object _initLock = new();
+    private static readonly Lock _initLock = new();
 
     private readonly ILogger<IDatabaseInitializer> _logger;
     private readonly IFileSystemAccess _fileSystemAccess;
