@@ -8,7 +8,7 @@ This library is designed to accelerate the development of prototypes, in-house u
 
 ## Opinionated Design and Hard Dependencies
 App Toolkit is intentionally an opinionated, batteries-included developer baseline for common app concerns.
-Currently even if your application uses only part of the API surface, all dependencies are transitively referenced.
+Currently, even if your application uses only part of the API surface, all dependencies are transitively referenced.
 Packages in the future may split along natural boundaries and might include Core, MVVM, Hosting, or similar capabilities.
 
 Major dependencies include:
