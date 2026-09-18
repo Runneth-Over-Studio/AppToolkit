@@ -33,7 +33,7 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         string pngPath = Path.Combine(contentDir, "logo.png");
         await RenderSvgToPngAsync(sourceSVGPath, pngPath);
 
-        // Create deployment icons using the logo PNG as their basis.
+        // Create deployment icons directly from the source SVG at their target sizes.
         context.Log.Information($"Creating icons suitable for various deployments...");
         await Task.WhenAll(
             RenderSvgToIcoAsync(sourceSVGPath, Path.Combine(contentDir, "favicon.ico"), 32),
@@ -118,5 +118,4 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         using SKData data = image.Encode(SKEncodedImageFormat.Png, 100);
         return data.ToArray();
     }
-
 }
