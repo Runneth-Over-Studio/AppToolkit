@@ -1,0 +1,47 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore AppToolkit
+        run: dotnet restore src/RunnethOverStudio.AppToolkit/RunnethOverStudio.AppToolkit.csproj
+
+      - name: Build AppToolkit
+        run: dotnet build src/RunnethOverStudio.AppToolkit/RunnethOverStudio.AppToolkit.csproj --configuration Release --no-restore
+
+      - name: Restore Cake build project
+        run: dotnet restore build/Build/Build.csproj
+
+      - name: Build Cake build project
+        run: dotnet build build/Build/Build.csproj --configuration Release --no-restore
