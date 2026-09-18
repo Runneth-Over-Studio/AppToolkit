@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace RunnethOverStudio.AppToolkit.Modules.UserAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.Access;
 
 /// <summary>
 /// Represents configuration settings for cryptographic operations used in user authentication.

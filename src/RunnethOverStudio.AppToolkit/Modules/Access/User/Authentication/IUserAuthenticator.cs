@@ -1,6 +1,6 @@
 ﻿using System.Security;
 
-namespace RunnethOverStudio.AppToolkit.Modules.UserAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.Access;
 
 /// <summary>
 /// Defines methods for user authentication and credential management,

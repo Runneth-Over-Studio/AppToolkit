@@ -41,11 +41,7 @@ Goal: provide host/DI-centric composition patterns only if recurring usage justi
 Goal: isolate SQLite/Dapper persistence concerns behind explicit package boundaries.
 
 ### Checklist
-- [ ] Move SQLite access interfaces/implementations into a dedicated data package.
-- [ ] Keep migration primitives and initializer logic with SQLite data implementation.
-- [ ] Review constructor/API contracts for clean dependency injection boundaries.
-- [ ] Ensure package clearly advertises Dapper + Microsoft.Data.Sqlite dependency.
-- [ ] Add migration notes for consumers currently referencing consolidated package.
+- [X] Remove overly opinionated data access abstractions out of library.
 
 ## Milestone: AppToolkit.Http
 Goal: isolate HTTP integration helpers and prepare optional resilience policies when justified.
@@ -71,7 +67,7 @@ Goal: remove namespace ambiguity by relocating file system helpers out of genera
 
 ### Checklist
 - [ ] Decide final placement (`Core.IO`, `Storage`, or dedicated package based on dependency boundaries).
-- [ ] Rename namespaces to clearly communicate file-system concern.
+- [X] Rename namespaces to clearly communicate file-system concern.
 - [ ] Preserve compatibility strategy (type forwards, deprecations, or migration notes) as needed.
 - [ ] Update docs and examples to use final namespace/package.
 
