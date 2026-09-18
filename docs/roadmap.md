@@ -62,6 +62,9 @@ Goal: clarify whether messaging stays in consolidated package or becomes its own
 - [ ] If split, ensure no unnecessary transitive dependencies.
 - [ ] Document recommended scenarios and non-goals (in-process only, not distributed bus).
 
+## Milestone: File System Namespace/Package Clarification
+Goal: remove namespace ambiguity by relocating file system helpers out of general data-access naming.
+
 ### Checklist
 - [ ] Decide final placement (`Core.IO`, `Storage`, or dedicated package based on dependency boundaries).
 - [X] Rename namespaces to clearly communicate file-system concern.
