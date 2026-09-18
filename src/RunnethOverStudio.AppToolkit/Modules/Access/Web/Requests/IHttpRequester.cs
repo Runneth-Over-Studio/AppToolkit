@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.Access;
 
 /// <summary>
 /// Provides methods for making HTTP requests, downloading files, and retrieving web resources.

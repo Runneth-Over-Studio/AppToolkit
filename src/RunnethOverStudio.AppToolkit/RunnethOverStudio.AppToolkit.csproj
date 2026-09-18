@@ -21,7 +21,7 @@
 	<IncludeSymbols>true</IncludeSymbols>
 	<EmbedUntrackedSources>true</EmbedUntrackedSources>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<Version>1.0.6</Version>
+	<Version>2.0.0</Version>
 	<PackageReleaseNotes>Initial full release.</PackageReleaseNotes>
   </PropertyGroup>
 
@@ -31,15 +31,13 @@
 
   <!-- Include files that are required by the project's resulting NuGet package. -->
   <ItemGroup>
-	<None Include="../../readme.md" Pack="true" PackagePath="readme.md" />
+    <None Include="../../readme.md" Pack="true" PackagePath="readme.md" />
 	<None Include="../../content/package-icon.png" Pack="true" PackagePath="package-icon.png" />
   </ItemGroup>
-	
+
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="Dapper" Version="2.1.79" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.12" />
 	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RunnethOverStudio.AppToolkit.Modules.UserAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.Access;
 
 /// <summary>
 /// Represents a data transfer object containing credential material used in cryptographic operations.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.Access;
 
 /// <summary>
 /// Provides utility methods for interacting with an operating system's files and directories.
@@ -34,7 +34,7 @@ public interface IFileSystemAccess
     /// <param name="fileName">The name of the file to write.</param>
     /// <param name="directoryPath">The directory in which to write the file. If <c>null</c>, the application directory is used.</param>
     /// <returns>
-    /// A <see cref="ProcessResult{T}"/> whose <c>Value</c> property is <c>true</c> if the file was written successfully; 
+    /// A <see cref="ProcessResult{T}"/> whose <c>Value</c> property is <c>true</c> if the file was written successfully;
     /// otherwise, <c>false</c>. If the operation fails, <see cref="ProcessResult{T}.Error"/> contains the exception.
     /// </returns>
     ProcessResult<bool> WriteFile(IEnumerable<string> contentLines, string fileName, string? directoryPath = null);
