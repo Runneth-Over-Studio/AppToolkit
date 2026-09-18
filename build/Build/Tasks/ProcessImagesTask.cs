@@ -125,8 +125,8 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         SKBitmap resizedBitmap = new(width, height, sourceBitmap.ColorType, sourceBitmap.AlphaType);
         using SKCanvas canvas = new(resizedBitmap);
         canvas.Clear(SKColors.Transparent);
-        using SKPaint paint = new() { IsAntialias = true, FilterQuality = SKFilterQuality.High };
-        canvas.DrawBitmap(sourceBitmap, new SKRect(0, 0, width, height), paint);
+        SKSamplingOptions sampling = new(SKCubicResampler.Mitchell);
+        canvas.DrawBitmap(sourceBitmap, new SKRect(0, 0, width, height), sampling);
         return resizedBitmap;
     }
 
