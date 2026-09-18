@@ -31,16 +31,16 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         context.Log.Information($"Creating project logo image (PNG) from source SVG file...");
         string sourceSVGPath = Path.Combine(contentDir, "logo", BuildContext.LOGO_SVG_FILENAME);
         string pngPath = Path.Combine(contentDir, "logo.png");
-        await ConvertSvgToPngAsync(sourceSVGPath, pngPath);
+        await RenderSvgToPngAsync(sourceSVGPath, pngPath);
 
         // Create deployment icons using the logo PNG as their basis.
         context.Log.Information($"Creating icons suitable for various deployments...");
         await Task.WhenAll(
-            ConvertPngToIcoAsync(pngPath, Path.Combine(contentDir, "favicon.ico")),
-            ConvertPngToIcoAsync(pngPath, Path.Combine(contentDir, "extension-icon.ico"), 64),
-            ResizePngAsync(pngPath, Path.Combine(contentDir, "icon-175.png"), 175, 175),
-            ResizePngAsync(pngPath, Path.Combine(contentDir, "extension-icon.png"), 90, 90),
-            ResizePngAsync(pngPath, Path.Combine(contentDir, "package-icon.png"), 128, 128)
+            RenderSvgToIcoAsync(sourceSVGPath, Path.Combine(contentDir, "favicon.ico"), 32),
+            RenderSvgToIcoAsync(sourceSVGPath, Path.Combine(contentDir, "extension-icon.ico"), 64),
+            RenderSvgToPngAsync(sourceSVGPath, Path.Combine(contentDir, "icon-175.png"), 175, 175),
+            RenderSvgToPngAsync(sourceSVGPath, Path.Combine(contentDir, "extension-icon.png"), 90, 90),
+            RenderSvgToPngAsync(sourceSVGPath, Path.Combine(contentDir, "package-icon.png"), 128, 128)
         );
 
         stopwatch.Stop();
@@ -48,50 +48,25 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         context.Log.Information($"Processing of project images complete ({completionTime}s)");
     }
 
-    private static async Task ConvertSvgToPngAsync(string sourceSvgPath, string targetPngPath)
+    private static async Task RenderSvgToPngAsync(string sourceSvgPath, string targetPngPath, int? width = null, int? height = null)
     {
-        // Load the SVG file.
-        SKSvg svg = new();
-        svg.Load(sourceSvgPath);
-
-        // Determine the canvas size from the SVG's picture bounds.
-        if (svg.Picture == null)
-        {
-            throw new InvalidOperationException("Failed to load SVG picture.");
-        }
-
-        var bounds = svg.Picture.CullRect;
-        int width = (int)Math.Ceiling(bounds.Width);
-        int height = (int)Math.Ceiling(bounds.Height);
-
-        // Convert SVG to bitmap.
-        using SKBitmap bitmap = new(width, height, SKColorType.Rgba8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb());
-        using (SKCanvas canvas = new(bitmap))
-        {
-            canvas.Clear(SKColors.Transparent);
-            canvas.DrawPicture(svg.Picture);
-        }
-
+        using SKBitmap bitmap = RenderSvg(sourceSvgPath, width, height);
         byte[] pngData = EncodePng(bitmap);
         await File.WriteAllBytesAsync(targetPngPath, pngData);
     }
 
-    private static async Task ConvertPngToIcoAsync(string sourcePngPath, string targetIcoPath, int iconSize = 32)
+    private static async Task RenderSvgToIcoAsync(string sourceSvgPath, string targetIcoPath, int iconSize)
     {
         // ref: https://www.meziantou.net/creating-ico-files-from-multiple-images-in-dotnet.htm
 
         const short NUM_IMAGES = 1;
 
-        using SKBitmap sourceBitmap = SKBitmap.Decode(sourcePngPath)
-            ?? throw new InvalidOperationException($"Failed to load PNG image '{sourcePngPath}'.");
-        using SKBitmap resizedBitmap = ResizeBitmap(sourceBitmap, iconSize, iconSize);
-        byte[] pngData = EncodePng(resizedBitmap);
+        using SKBitmap bitmap = RenderSvg(sourceSvgPath, iconSize, iconSize);
+        byte[] pngData = EncodePng(bitmap);
 
-        // Create the ICO file.
         await using FileStream output = File.OpenWrite(targetIcoPath);
         await using BinaryWriter iconWriter = new(output);
 
-        // Write ICO header.
         iconWriter.Write((byte)0); // reserved
         iconWriter.Write((byte)0);
         iconWriter.Write((short)1); // image type: icon
@@ -99,7 +74,6 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
 
         long offset = 6 + (16 * NUM_IMAGES); // ico header (6 bytes) + image directory (16 bytes per image)
 
-        // Write image directory.
         iconWriter.Write((byte)(iconSize >= 256 ? 0 : iconSize));
         iconWriter.Write((byte)(iconSize >= 256 ? 0 : iconSize));
         iconWriter.Write((byte)0); // number of colors
@@ -108,9 +82,34 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         iconWriter.Write((short)32); // bits per pixel
         iconWriter.Write((uint)pngData.Length); // size of image data
         iconWriter.Write((uint)offset); // offset of image data
-
-        // Write image data.
         iconWriter.Write(pngData);
+    }
+
+    private static SKBitmap RenderSvg(string sourceSvgPath, int? targetWidth = null, int? targetHeight = null)
+    {
+        SKSvg svg = new();
+        svg.Load(sourceSvgPath);
+
+        if (svg.Picture == null)
+        {
+            throw new InvalidOperationException("Failed to load SVG picture.");
+        }
+
+        SKRect bounds = svg.Picture.CullRect;
+        int width = targetWidth ?? (int)Math.Ceiling(bounds.Width);
+        int height = targetHeight ?? (int)Math.Ceiling(bounds.Height);
+
+        SKBitmap bitmap = new(width, height, SKColorType.Rgba8888, SKAlphaType.Premul, SKColorSpace.CreateSrgb());
+        using SKCanvas canvas = new(bitmap);
+        canvas.Clear(SKColors.Transparent);
+
+        float scaleX = width / bounds.Width;
+        float scaleY = height / bounds.Height;
+        canvas.Scale(scaleX, scaleY);
+        canvas.Translate(-bounds.Left, -bounds.Top);
+        canvas.DrawPicture(svg.Picture);
+
+        return bitmap;
     }
 
     private static byte[] EncodePng(SKBitmap bitmap)
@@ -120,23 +119,4 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         return data.ToArray();
     }
 
-    private static SKBitmap ResizeBitmap(SKBitmap sourceBitmap, int width, int height)
-    {
-        SKBitmap resizedBitmap = new(width, height, sourceBitmap.ColorType, sourceBitmap.AlphaType);
-        using SKCanvas canvas = new(resizedBitmap);
-        canvas.Clear(SKColors.Transparent);
-        SKSamplingOptions sampling = new(SKCubicResampler.Mitchell);
-        canvas.DrawBitmap(sourceBitmap, new SKRect(0, 0, width, height), sampling);
-        return resizedBitmap;
-    }
-
-    private static async Task ResizePngAsync(string sourcePngPath, string targetPngPath, int width, int height)
-    {
-        using SKBitmap sourceBitmap = SKBitmap.Decode(sourcePngPath)
-            ?? throw new InvalidOperationException($"Failed to load PNG image '{sourcePngPath}'.");
-        using SKBitmap resizedBitmap = ResizeBitmap(sourceBitmap, width, height);
-
-        byte[] pngData = EncodePng(resizedBitmap);
-        await File.WriteAllBytesAsync(targetPngPath, pngData);
-    }
 }
