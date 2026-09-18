@@ -2,11 +2,11 @@
 using System.Security;
 using System.Security.Cryptography;
 
-namespace RunnethOverStudio.AppToolkit.Modules.UserAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.Access;
 
 /// <summary>
 /// Provides a simple implementation of <see cref="IUserAuthenticator"/> for user authentication and credential management,
-/// including login verification and secure credential creation. This implementation is intended for straightforward 
+/// including login verification and secure credential creation. This implementation is intended for straightforward
 /// scenarios and is not designed to provide advanced features or the robustness of enterprise solutions.
 /// </summary>
 /// <remarks>
@@ -83,7 +83,11 @@ public sealed class UserAuthenticator : IUserAuthenticator
 
     private byte[] GenerateHash(byte[] password, byte[] salt, int workFactor)
     {
-        using Rfc2898DeriveBytes deriveBytes = new(password, salt, workFactor, _cryptographyConfig.AlgorithmName);
-        return deriveBytes.GetBytes(_cryptographyConfig.SaltLength);
+        return Rfc2898DeriveBytes.Pbkdf2(
+            password,
+            salt,
+            workFactor,
+            _cryptographyConfig.AlgorithmName,
+            _cryptographyConfig.SaltLength);
     }
 }

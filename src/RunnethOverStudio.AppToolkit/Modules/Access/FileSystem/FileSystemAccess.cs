@@ -6,7 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 
-namespace RunnethOverStudio.AppToolkit.Modules.DataAccess;
+namespace RunnethOverStudio.AppToolkit.Modules.Access;
 
 /// <summary>
 /// Provides utility methods for interacting with an operating system's files and directories.
