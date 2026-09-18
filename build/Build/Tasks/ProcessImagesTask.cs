@@ -1,10 +1,6 @@
 ﻿using Build.Tasks.Standard;
 using Cake.Core.Diagnostics;
 using Cake.Frosting;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using SkiaSharp;
 using Svg.Skia;
 using System;
@@ -76,11 +72,8 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
             canvas.DrawPicture(svg.Picture);
         }
 
-        // Convert bitmap to an ImageSharp image.
-        using Image<Rgba32> image = Image.LoadPixelData<Rgba32>(bitmap.Bytes, bitmap.Width, bitmap.Height);
-
-        // Save as PNG.
-        await image.SaveAsync(targetPngPath, new PngEncoder());
+        byte[] pngData = EncodePng(bitmap);
+        await File.WriteAllBytesAsync(targetPngPath, pngData);
     }
 
     private static async Task ConvertPngToIcoAsync(string sourcePngPath, string targetIcoPath, int iconSize = 32)
@@ -89,14 +82,10 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
 
         const short NUM_IMAGES = 1;
 
-        // Load and resize the image.
-        using Image image = await Image.LoadAsync(sourcePngPath);
-        using Image resizedImage = image.Clone(ctx => ctx.Resize(iconSize, iconSize));
-
-        // Save resized image as PNG to memory.
-        using MemoryStream pngStream = new();
-        await resizedImage.SaveAsPngAsync(pngStream);
-        byte[] pngData = pngStream.ToArray();
+        using SKBitmap sourceBitmap = SKBitmap.Decode(sourcePngPath)
+            ?? throw new InvalidOperationException($"Failed to load PNG image '{sourcePngPath}'.");
+        using SKBitmap resizedBitmap = ResizeBitmap(sourceBitmap, iconSize, iconSize);
+        byte[] pngData = EncodePng(resizedBitmap);
 
         // Create the ICO file.
         await using FileStream output = File.OpenWrite(targetIcoPath);
@@ -124,11 +113,30 @@ public sealed class ProcessImagesTask : AsyncFrostingTask<BuildContext>
         iconWriter.Write(pngData);
     }
 
+    private static byte[] EncodePng(SKBitmap bitmap)
+    {
+        using SKImage image = SKImage.FromBitmap(bitmap);
+        using SKData data = image.Encode(SKEncodedImageFormat.Png, 100);
+        return data.ToArray();
+    }
+
+    private static SKBitmap ResizeBitmap(SKBitmap sourceBitmap, int width, int height)
+    {
+        SKBitmap resizedBitmap = new(width, height, sourceBitmap.ColorType, sourceBitmap.AlphaType);
+        using SKCanvas canvas = new(resizedBitmap);
+        canvas.Clear(SKColors.Transparent);
+        using SKPaint paint = new() { IsAntialias = true, FilterQuality = SKFilterQuality.High };
+        canvas.DrawBitmap(sourceBitmap, new SKRect(0, 0, width, height), paint);
+        return resizedBitmap;
+    }
+
     private static async Task ResizePngAsync(string sourcePngPath, string targetPngPath, int width, int height)
     {
-        using Image image = await Image.LoadAsync(sourcePngPath);
-        using Image resizedImage = image.Clone(ctx => ctx.Resize(width, height));
+        using SKBitmap sourceBitmap = SKBitmap.Decode(sourcePngPath)
+            ?? throw new InvalidOperationException($"Failed to load PNG image '{sourcePngPath}'.");
+        using SKBitmap resizedBitmap = ResizeBitmap(sourceBitmap, width, height);
 
-        await resizedImage.SaveAsync(targetPngPath, new PngEncoder());
+        byte[] pngData = EncodePng(resizedBitmap);
+        await File.WriteAllBytesAsync(targetPngPath, pngData);
     }
 }
