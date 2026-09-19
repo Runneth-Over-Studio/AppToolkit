@@ -58,9 +58,11 @@ jobs:
         shell: pwsh
         run: |
           [xml]$project = Get-Content "$env:PROJECT_PATH"
-          $version = [string]$project.Project.PropertyGroup.Version |
+          # XML element values can preserve formatting whitespace from the project file.
+          # Normalize it before validating and using the version in paths/tags.
+          $version = ([string]$project.Project.PropertyGroup.Version |
             Where-Object { $_ } |
-            Select-Object -First 1
+            Select-Object -First 1).Trim()
 
           if ($version -notmatch '^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$') {
             throw "Project version '$version' is not a valid semantic version."
