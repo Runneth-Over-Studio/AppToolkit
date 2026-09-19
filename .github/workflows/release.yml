@@ -37,6 +37,8 @@ jobs:
       tag: ${{ steps.version.outputs.tag }}
 
     steps:
+      # Releases are intentionally produced only from main. The protected
+      # publishing environment independently enforces the same restriction.
       - name: Require main branch
         if: github.ref != 'refs/heads/main'
         run: |
@@ -77,6 +79,8 @@ jobs:
             exit 1
           fi
 
+      # Cake remains the authoritative release build so local and CI releases
+      # use the same restore, image-processing, build, and packaging pipeline.
       - name: Run Cake release build
         working-directory: build/Build
         run: dotnet run -- --configuration=Release
@@ -108,6 +112,8 @@ jobs:
           echo "  $package"
           echo "  $symbols"
 
+      # Preserve the exact packages produced by the build job. The publish job
+      # downloads these artifacts rather than rebuilding the release.
       - name: Upload release packages
         uses: actions/upload-artifact@v7
         with:
@@ -123,6 +129,8 @@ jobs:
     if: inputs.publish
     needs: build
     runs-on: ubuntu-latest
+    # This protected environment is the deliberate approval boundary before
+    # anything can be published externally.
     environment: nuget-production
 
     permissions:
@@ -146,12 +154,16 @@ jobs:
           name: AppToolkit-${{ needs.build.outputs.version }}
           path: release-packages
 
+      # NuGet Trusted Publishing exchanges GitHub's OIDC identity for a
+      # short-lived API key; no long-lived NuGet API key is stored in GitHub.
       - name: Authenticate to NuGet
         id: nuget
         uses: NuGet/login@v1
         with:
           user: ${{ vars.NUGET_USER }}
 
+      # dotnet nuget push automatically publishes a matching .snupkg found
+      # beside the .nupkg, so the symbol package must not be pushed separately.
       - name: Publish package to NuGet
         shell: bash
         run: |
