@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RunnethOverStudio.AppToolkit.Core;
 
@@ -128,9 +129,9 @@ public class ProcessResult<T, TError> where TError : struct, Enum
     /// </summary>
     /// <param name="value">The successful value when present; otherwise, the default value.</param>
     /// <returns><see langword="true"/> when successful; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet(out T? value)
+    public bool TryGet([MaybeNullWhen(false)] out T value)
     {
-        value = IsSuccessful ? _value : default;
+        value = _value;
         return IsSuccessful;
     }
 
