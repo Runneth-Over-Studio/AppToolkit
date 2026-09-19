@@ -159,13 +159,6 @@ jobs:
             --api-key "${{ steps.nuget.outputs.NUGET_API_KEY }}" \
             --source https://api.nuget.org/v3/index.json
 
-      - name: Publish symbol package to NuGet
-        shell: bash
-        run: |
-          dotnet nuget push "release-packages/${PACKAGE_ID}.${{ needs.build.outputs.version }}.snupkg" \
-            --api-key "${{ steps.nuget.outputs.NUGET_API_KEY }}" \
-            --source https://api.nuget.org/v3/index.json
-
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
