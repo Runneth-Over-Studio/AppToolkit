@@ -98,8 +98,8 @@ public class ProcessResult<T>
     /// <param name="error">The exception representing the failure. Cannot be <see langword="null"/>.</param>
     /// <returns>A <see cref="ProcessResult{T}"/> representing an exceptional failure.</returns>
     /// <remarks>
-    /// Prefer <see cref="ProcessResult{T,TError}.Failure(TError)"/> when the failure is an expected outcome that callers
-    /// should handle without exception semantics.
+    /// Prefer <see cref="ProcessResult{T,TError}"/> when the failure is an expected outcome that callers should handle
+    /// without exception semantics.
     /// </remarks>
     public static ProcessResult<T> Failure(Exception error) => new(error);
 
